@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from "react";
+import "./App.css";
+
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  userImage?: string;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [users, setUsers] = useState<User[]>([]);
+  const [error, setError] = useState<string>("");
+  const URL = "/api/users";
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(URL);
+      const userData: User[] = await response.json();
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      setUsers(userData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An error occurred");
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   return (
     <>
+      <div>Hello testing</div>
+      {error && <p>Error: {error}</p>}
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {users.map((user) => (
+          <div key={user._id}>
+            <h1>
+              {user.firstName} {user.lastName}
+            </h1>
+            {user.userImage && (
+              <img
+                src={user.userImage}
+                alt={`${user.firstName} ${user.lastName}`}
+              />
+            )}
+          </div>
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
