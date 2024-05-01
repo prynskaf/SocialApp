@@ -19,7 +19,8 @@ const Homepage = () => {
         // justifyContent: "space-between",
         px: "20px",
         // gap: "30px",
-        // flex: "nowrap",
+        flex: "nowrap",
+        whiteSpace: "nowrap",
       }}
     >
       <Grid>
