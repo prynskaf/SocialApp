@@ -1,4 +1,7 @@
+// postController.ts (Backend)
+
 import { Request, Response } from "express";
+import User from "../models/User";
 import Post, { PostDocument } from "../models/Post";
 
 // Get all posts
@@ -27,11 +30,27 @@ export const getPostById = async (req: Request, res: Response) => {
 
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
-  const { user_id, content, imageUrls } = req.body;
+  const { email, content } = req.body;
+  const imageFile = req.file; // This will have the file information
+
   try {
-    const newPost = await Post.create({ user: user_id, content, imageUrls });
+    // Check if the user exists based on the email address
+    let user = await User.findOne({ emailAddress: email });
+
+    // If the user doesn't exist, return an error
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    const imagePath = imageFile ? imageFile.path : null;
+    // Assume there's logic to handle creation of post with imagePath
+    const newPost = await Post.create({
+      user: user._id, // Associate the user with the post
+      content,
+      image: imagePath, // Save the path or process as needed
+    });
     res.status(201).json(newPost);
-  } catch (error: any) {
+  } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };

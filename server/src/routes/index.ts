@@ -26,6 +26,7 @@ import {
   getLikeById,
   deleteLike,
 } from "../controllers/LikeController";
+import { upload } from "../utils/multerConfig";
 
 const router = express.Router();
 
@@ -39,7 +40,7 @@ router.delete("/users/:id", deleteUser);
 // Post routes
 router.get("/posts", getAllPosts);
 router.get("/posts/:id", getPostById);
-router.post("/posts", createPost);
+router.post("/posts", upload.single("image"), createPost); // Use multer middleware here
 router.put("/posts/:id", updatePost);
 router.delete("/posts/:id", deletePost);
 
