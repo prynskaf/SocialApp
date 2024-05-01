@@ -1,8 +1,7 @@
-import React from "react";
 import Profile from "../components/Profile/Profile";
-import Post from "../components/Posts/Post";
 import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import PostForm from "../components/Posts/PostForm.tsx";
 
 const Homepage = () => {
   const theme = useTheme();
@@ -20,13 +19,14 @@ const Homepage = () => {
         // justifyContent: "space-between",
         px: "20px",
         // gap: "30px",
+        // flex: "nowrap",
       }}
     >
       <Grid>
         <Profile />
       </Grid>
       <Grid>
-        <Post />
+        <PostForm />
       </Grid>
       <Grid sx={{}}>
         <Widget />

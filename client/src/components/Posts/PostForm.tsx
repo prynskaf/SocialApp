@@ -9,7 +9,7 @@ interface Post {
   imageUrls: string[];
 }
 
-const Post: React.FC = () => {
+const PostForm: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -17,7 +17,12 @@ const Post: React.FC = () => {
   const [fileName, setFileName] = useState("");
   const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState<Post[]>([]);
-  console.log(posts);
+
+  // After setting the state for posts
+  console.log(
+    "Image URLs:",
+    posts.map((post) => post.imageUrls)
+  );
 
   useEffect(() => {
     fetchPosts();
@@ -25,7 +30,7 @@ const Post: React.FC = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch("/api/posts");
+      const response = await fetch("http://localhost:8080/api/posts/");
       if (response.ok) {
         const data = await response.json();
         setPosts(data);
@@ -49,8 +54,19 @@ const Post: React.FC = () => {
   const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setPostText(event.target.value);
   };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    console.log("User Email:", user?.emailAddresses[0].emailAddress);
+    console.log("Post Content:", postText);
+
+    if (event.currentTarget.image.files[0]) {
+      console.log("Image Uploaded:", event.currentTarget.image.files[0].name);
+    } else {
+      console.log("No image uploaded with the post.");
+    }
+
     // Check if postText is not empty
     if (!postText || postText.trim() === "") {
       console.error("Content is required for the post.");
@@ -60,7 +76,6 @@ const Post: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append("email", user?.emailAddresses[0].emailAddress ?? "");
-      console.log("User Email:", user?.emailAddresses[0].emailAddress);
 
       formData.append("content", postText);
       // Check if an image is selected
@@ -210,21 +225,23 @@ const Post: React.FC = () => {
       </form>
 
       {/* Render posts */}
-      {/* Render posts */}
       {posts.map((post) => (
         <Grid key={post._id}>
           <p>{post.content}</p>
-          {post.imageUrls.length > 0 && (
-            <div>
-              {post.imageUrls.map((url, index) => (
-                <img key={index} src={url} alt={`Post Image ${index}`} />
-              ))}
-            </div>
-          )}
+          {/* Check if imageUrls array is not empty */}
+          {post.imageUrls.length > 0 &&
+            post.imageUrls.map((imageUrl, index) => (
+              <img
+                key={index}
+                src={`http://localhost:8080/uploads/${imageUrl}`}
+                alt={`Post Image ${index}`}
+                style={{ objectFit: "contain", width: "100%", height: "400px" }}
+              />
+            ))}
         </Grid>
       ))}
     </Grid>
   );
 };
 
-export default Post;
+export default PostForm;
