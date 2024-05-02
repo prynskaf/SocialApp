@@ -50,8 +50,8 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 // Create a new user
-// Create a new user
 export const createUser = async (req: Request, res: Response) => {
+  console.log("Received data:", req.body);
   const { firstName, lastName, userImage, emailAddress } = req.body;
   try {
     // Check if firstName, lastName, and emailAddress are provided

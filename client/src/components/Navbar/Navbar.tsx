@@ -24,6 +24,7 @@ const Navbar = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        // position: "fixed",
       }}
     >
       {/* Search input centered */}

@@ -12,29 +12,36 @@ const Profile: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { user } = useClerk();
-  // console.log(user);
+  console.log(user);
 
   const registerUser = async (userData: User, clerkId: string) => {
-    // Add clerkId parameter
     try {
       const response = await fetch("http://localhost:8080/api/users/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...userData, emailAddress: clerkId }), // Use emailAddress instead of clerkId
+        body: JSON.stringify({ ...userData, emailAddress: clerkId }),
       });
+
       if (response.ok) {
         console.log("User registered successfully");
-      } else if (response.status === 400) {
-        const data = await response.json();
-        if (data.message === "User already exists") {
-          console.log("User is already registered");
-        } else {
+        return; // Return early to avoid further processing
+      }
+
+      // Handle errors based on status code
+      const data = await response.json(); // Assuming all error responses will be in JSON format
+      switch (response.status) {
+        case 400:
+          if (data.message === "User already exists") {
+            console.log("User is already registered");
+          } else {
+            console.error("Failed to register user:", data.message);
+          }
+          break;
+        default:
           console.error("Failed to register user:", response.statusText);
-        }
-      } else {
-        console.error("Failed to register user:", response.statusText);
+          break;
       }
     } catch (error) {
       console.error("Error registering user:", error);
@@ -44,7 +51,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (user && user.emailAddresses && user.emailAddresses.length > 0) {
       const emailAddress = user.emailAddresses[0].emailAddress;
-      // console.log("User's email address:", emailAddress);
+      console.log("User's email address:", emailAddress);
 
       // Check if the user already exists
       fetch(
