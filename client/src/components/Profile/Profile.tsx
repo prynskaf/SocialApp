@@ -12,77 +12,79 @@ const Profile: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { user } = useClerk();
-  console.log(user);
-
-  const registerUser = async (userData: User, clerkId: string) => {
-    try {
-      const response = await fetch("http://localhost:8080/api/users/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...userData, emailAddress: clerkId }),
-      });
-
-      if (response.ok) {
-        console.log("User registered successfully");
-        return; // Return early to avoid further processing
-      }
-
-      // Handle errors based on status code
-      const data = await response.json(); // Assuming all error responses will be in JSON format
-      switch (response.status) {
-        case 400:
-          if (data.message === "User already exists") {
-            console.log("User is already registered");
-          } else {
-            console.error("Failed to register user:", data.message);
-          }
-          break;
-        default:
-          console.error("Failed to register user:", response.statusText);
-          break;
-      }
-    } catch (error) {
-      console.error("Error registering user:", error);
-    }
-  };
 
   useEffect(() => {
-    if (user && user.emailAddresses && user.emailAddresses.length > 0) {
-      const emailAddress = user.emailAddresses[0].emailAddress;
-      console.log("User's email address:", emailAddress);
-
-      // Check if the user already exists
-      fetch(
-        `http://localhost:8080/api/users?emailAddress=${encodeURIComponent(
-          emailAddress
-        )}`
-      )
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Failed to fetch user data");
-          }
-        })
-        .then((userData) => {
-          if (userData.length === 0) {
-            // User does not exist, register them
-            const userDataToSend: User = {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              imageUrl: user.imageUrl,
-            };
-            registerUser(userDataToSend, emailAddress);
-          } else {
-            console.log("User is already registered");
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
+    const registerUser = async (userData: User, clerkId: string) => {
+      try {
+        const response = await fetch("http://localhost:8080/api/users", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ ...userData, emailAddress: clerkId }),
         });
-    }
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || response.statusText);
+        }
+
+        console.log("User registered successfully");
+      } catch (error) {
+        console.error("Error registering user:", error);
+      }
+    };
+
+    const fetchUserData = async () => {
+      try {
+        console.log("User:", user);
+        if (!user || !user.emailAddresses || user.emailAddresses.length === 0) {
+          console.log("User data is missing or invalid");
+          return;
+        }
+
+        const emailAddress = user?.emailAddresses[0]?.emailAddress;
+        console.log("Email address:", emailAddress);
+        if (!emailAddress) {
+          console.log("Email address is missing or invalid");
+          return;
+        }
+
+        if (!emailAddress) {
+          console.log("Email address is missing or invalid");
+          return;
+        }
+
+        const url = `http://localhost:8080/api/users?emailAddress=${encodeURIComponent(
+          emailAddress
+        )}`;
+        console.log("Request URL:", url);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const userData = await response.json();
+
+        if (userData.length === 0) {
+          const userDataToSend: User = {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            imageUrl: user.imageUrl,
+          };
+          console.log("User data to send:", userDataToSend);
+          registerUser(userDataToSend, emailAddress);
+        } else {
+          console.log("User is already registered");
+        }
+      } catch (error) {
+        console.error("Error fetching or processing user data:", error);
+      }
+    };
+
+    fetchUserData();
   }, [user]);
 
   return (
@@ -125,7 +127,7 @@ const Profile: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <Typography>Login</Typography>
+          <Typography variant="body1">Login</Typography>
         </Box>
       )}
     </Grid>
