@@ -49,41 +49,21 @@ export const getUserById = async (req: Request, res: Response) => {
   }
 };
 
-// Function to validate email address format
-const isValidEmail = (email: string) => {
-  // Regular expression for basic email format validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
-
-// Create a new user
+// Create a new user or retrieve existing user
 export const createUser = async (req: Request, res: Response) => {
-  console.log("Received data:", req.body);
-
-  // Log the full request object
-  console.log("Full Request Object:", req);
-
   const { firstName, lastName, userImage, emailAddress } = req.body;
   try {
-    // Check if firstName, lastName, and emailAddress are provided
-    if (!firstName || !lastName || !emailAddress) {
-      throw new Error("First name, last name, and email address are required");
-    }
+    // Check if the user already exists
+    let existingUser: UserDocument | null = await User.findOne({
+      emailAddress,
+    });
 
-    // Validate the format of the email address
-    if (!isValidEmail(emailAddress)) {
-      throw new Error("Invalid email address format");
-    }
-
-    // Check if the user already exists by email address
-    const existingUser = await User.findOne({ emailAddress });
+    // If the user already exists, send back the existing user
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "User with this email already exists" });
+      return res.status(200).json(existingUser);
     }
 
-    // Create a new user with provided details
+    // If the user does not exist, create a new user
     const newUser = await User.create({
       firstName,
       lastName,
