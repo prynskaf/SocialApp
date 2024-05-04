@@ -1,11 +1,13 @@
-import { useClerk } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
+
 import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
 
 const Profile: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { user } = useClerk();
+  const { isSignedIn, user } = useUser();
+  console.log("user:", isSignedIn, user);
 
   return (
     <Grid
@@ -20,7 +22,7 @@ const Profile: React.FC = () => {
         borderRadius: "10px",
       }}
     >
-      {user ? (
+      {user && isSignedIn ? (
         <>
           <Box>
             <img

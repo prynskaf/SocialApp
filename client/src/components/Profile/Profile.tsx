@@ -1,91 +1,58 @@
-import { useClerk } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React, { useEffect } from "react";
 
-interface User {
-  firstName: string | null;
-  lastName: string | null;
-  imageUrl: string | null;
+// Define UserData interface with nullable properties
+interface UserData {
+  firstName: string;
+  lastName: string;
+  imageUrl: string;
+  emailAddress: string;
 }
 
 const Profile: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { user } = useClerk();
+  const { isSignedIn, user } = useUser();
 
   useEffect(() => {
-    const registerUser = async (userData: User, clerkId: string) => {
+    const registerUserInDatabase = async (userData: UserData) => {
       try {
-        const response = await fetch("http://localhost:8080/api/users", {
+        const response = await fetch("/api/users", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ ...userData, emailAddress: clerkId }),
+          body: JSON.stringify(userData),
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || response.statusText);
+          throw new Error("Failed to register user");
         }
-
-        console.log("User registered successfully");
       } catch (error) {
-        console.error("Error registering user:", error);
+        console.error("Registration error:", error);
       }
     };
 
-    const fetchUserData = async () => {
-      try {
-        console.log("User:", user);
-        if (!user || !user.emailAddresses || user.emailAddresses.length === 0) {
-          console.log("User data is missing or invalid");
-          return;
-        }
+    if (isSignedIn && user) {
+      // Check if the user is new
+      const isNewUser = !user.publicMetadata.registrationCompleted;
+      console.log("Is new user:", isNewUser);
 
-        const emailAddress = user?.emailAddresses[0]?.emailAddress;
-        console.log("Email address:", emailAddress);
-        if (!emailAddress) {
-          console.log("Email address is missing or invalid");
-          return;
-        }
+      // If the user is new, register them in the database
+      if (isNewUser) {
+        // Extract user information and handle null values
+        const userData: UserData = {
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
+          emailAddress: user?.emailAddresses[0]?.emailAddress || "",
+          imageUrl: user.imageUrl || "",
+        };
 
-        if (!emailAddress) {
-          console.log("Email address is missing or invalid");
-          return;
-        }
-
-        const url = `http://localhost:8080/api/users?emailAddress=${encodeURIComponent(
-          emailAddress
-        )}`;
-        console.log("Request URL:", url);
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user data");
-        }
-
-        const userData = await response.json();
-
-        if (userData.length === 0) {
-          const userDataToSend: User = {
-            firstName: user.firstName,
-            lastName: user.lastName,
-            imageUrl: user.imageUrl,
-          };
-          console.log("User data to send:", userDataToSend);
-          registerUser(userDataToSend, emailAddress);
-        } else {
-          console.log("User is already registered");
-        }
-      } catch (error) {
-        console.error("Error fetching or processing user data:", error);
+        registerUserInDatabase(userData);
       }
-    };
-
-    fetchUserData();
-  }, [user]);
+    }
+  }, [isSignedIn, user]);
 
   return (
     <Grid
@@ -100,18 +67,18 @@ const Profile: React.FC = () => {
         borderRadius: "10px",
       }}
     >
-      {user ? (
+      {user && isSignedIn ? (
         <>
           <Box>
             <img
-              src={user.imageUrl || ""}
+              src={user?.imageUrl || ""}
               alt="Profile"
               style={{ width: "100%", height: "30px", borderRadius: "50%" }}
             />
           </Box>
           <Box>
             <h3>
-              {user.firstName || ""} {user.lastName || ""}
+              {user.firstName || ""} {user.lastName || ""}{" "}
             </h3>
             <p>Posts</p>
             <p>Likes</p>
