@@ -11,12 +11,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.0.3",
+    "@clerk/clerk-react": "^5.0.4",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.15",
-    "@mui/material": "^5.15.15",
-    "react": "^18.2.0",
+    "@mui/material": "^5.15.17",
+    "react": "^18.3.1",
     "react-dom": "^18.2.0",
     "react-timeago": "^7.2.0"
   },
