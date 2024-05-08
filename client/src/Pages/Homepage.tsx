@@ -2,7 +2,7 @@ import Profile from "../components/Profile/Profile";
 import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
 import PostForm from "../components/Posts/PostForm.tsx";
-import PostCard from "../components/PostCard.tsx";
+import PostCard from "../components/PostCard/PostCard.tsx";
 
 const Homepage = () => {
   const theme = useTheme();

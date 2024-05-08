@@ -5,21 +5,25 @@ import User from "../models/User";
 import Post from "../models/Post";
 import path from "path";
 
-// Get all posts
+// Get all posts with user details
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find()
+      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .exec();
     res.status(200).json(posts);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Get a single post by ID
+// Get a single post by ID with user details
 export const getPostById = async (req: Request, res: Response) => {
   const postId = req.params.id;
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId)
+      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .exec();
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -52,10 +56,6 @@ export const createPost = async (req: Request, res: Response) => {
           .status(400)
           .json({ message: "Only image files are allowed" });
       }
-      // Handle file size validation if needed
-      // if (imageFile.size > MAX_FILE_SIZE) {
-      //   return res.status(400).json({ message: "File size exceeds the limit" });
-      // }
 
       // Save the image path or process as needed
       imagePath = imageFile.path;
@@ -66,15 +66,13 @@ export const createPost = async (req: Request, res: Response) => {
       imagePath = filename;
     }
 
-    // Assume there's logic to handle creation of post with imagePath
     const newPost = await Post.create({
-      user: user._id, // Associate the user with the post
+      user: user._id,
       content,
       imageUrls: [imagePath], // Store only the filename
     });
     res.status(201).json(newPost);
   } catch (error: any) {
-    // Log the error for debugging purposes
     console.error("Error creating post:", error);
     res.status(500).json({ message: "Failed to create post" });
   }
@@ -89,7 +87,9 @@ export const updatePost = async (req: Request, res: Response) => {
       postId,
       { content, imageUrls },
       { new: true }
-    );
+    )
+      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .exec();
     if (!updatedPost) {
       return res.status(404).json({ message: "Post not found" });
     }
