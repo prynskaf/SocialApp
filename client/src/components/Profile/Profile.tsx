@@ -45,7 +45,7 @@ const Profile: React.FC = () => {
         const userData: UserData = {
           firstName: user.firstName || "",
           lastName: user.lastName || "",
-          emailAddress: user?.emailAddresses[0]?.emailAddress || "",
+          emailAddress: user?.emailAddresses?.[0]?.emailAddress || "",
           imageUrl: user.imageUrl || "",
         };
 
