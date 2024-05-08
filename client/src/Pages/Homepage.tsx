@@ -1,3 +1,4 @@
+import React from "react";
 import Profile from "../components/Profile/Profile";
 import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
