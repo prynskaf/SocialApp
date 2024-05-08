@@ -31,7 +31,7 @@ const PostCard: React.FC = () => {
           const data = await response.json();
           setPosts(
             data.sort(
-              (a, b) =>
+              (a: { timestamp: string }, b: { timestamp: string }) =>
                 new Date(b.timestamp).getTime() -
                 new Date(a.timestamp).getTime()
             )
