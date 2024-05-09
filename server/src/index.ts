@@ -40,7 +40,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://social-app-silk-nine.vercel.app"
+    "https://https://social-9fxtfs33m-prince-kaf.vercel.app"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
