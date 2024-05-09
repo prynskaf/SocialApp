@@ -36,10 +36,11 @@ app.use("/api", router);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Set CORS headers
+// Set CORS headers
 app.use((req, res, next) => {
   res.setHeader(
     "Access-Control-Allow-Origin",
-    "https://social-app-phi-eight.vercel.app/"
+    "https://social-app-silk-nine.vercel.app"
   );
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
