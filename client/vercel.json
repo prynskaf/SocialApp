@@ -1,5 +1,24 @@
 {
   "version": 2,
-  "builds": [{ "src": "client/package.json", "use": "@vercel/static-build" }],
-  "routes": [{ "src": "/(.*)", "dest": "client/$1" }]
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://socialapp-backend-ujiv.onrender.com/api/$1",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
 }
