@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
   // Determine the backend URL based on the mode
   const backendUrl =
     mode === "production"
-      ? "https://socialapp-backend-ujiv.onrender.com" // Use production backend URL
+      ? "https://social-9fxtfs33m-prince-kaf.vercel.app" // Use production backend URL
       : "http://localhost:8080"; // Use development backend URL
 
   return {
