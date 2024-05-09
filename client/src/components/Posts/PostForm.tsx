@@ -43,7 +43,7 @@ const PostForm: React.FC = () => {
         formData.append("image", event.currentTarget.image.files[0]);
       }
 
-      const response = await fetch("http://localhost:8080/api/posts/", {
+      const response = await fetch("/api/posts/", {
         method: "POST",
         body: formData,
       });
