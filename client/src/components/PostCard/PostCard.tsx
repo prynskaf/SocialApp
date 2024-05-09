@@ -26,7 +26,7 @@ const PostCard: React.FC = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/posts/");
+        const response = await fetch("/api/posts/");
         if (response.ok) {
           const data = await response.json();
           setPosts(
@@ -106,7 +106,7 @@ const PostCard: React.FC = () => {
               post.imageUrls.map((imageUrl, index) => (
                 <img
                   key={index}
-                  src={`http://localhost:8080/uploads/${imageUrl}`}
+                  src={`https://socialapp-backend-ujiv.onrender.com/uploads/${imageUrl}`}
                   alt={`Post Image ${index}`}
                   style={{
                     width: "100%",
