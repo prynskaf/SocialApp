@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import TimeAgo from "react-timeago";
+import Likes from "../Likes/Likes";
+import Comments from "../Comments/Comments";
 // import { useUser } from "@clerk/clerk-react";
 
 interface Post {
@@ -9,12 +11,14 @@ interface Post {
   imageUrls: string[];
   user?: User;
   timestamp: string;
+  likes: Array<{ _id: string }>;
 }
 
 interface User {
+  _id: string;
   firstName: string;
   lastName: string;
-  imageUrls?: string[]; // Make imageUrls optional or ensure they are always an array.
+  imageUrls?: string[];
 }
 
 const PostCard: React.FC = () => {
@@ -22,6 +26,11 @@ const PostCard: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [posts, setPosts] = useState<Post[]>([]);
   // const { isSignedIn, user } = useUser();
+
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const baseUrl = isDevelopment
+    ? "http://localhost:8080/uploads"
+    : "https://socialapp-backend-ujiv.onrender.com/uploads";
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -46,6 +55,31 @@ const PostCard: React.FC = () => {
 
     fetchPosts();
   }, []);
+
+  const handleLike = (post: Post) => {
+    // Retrieve user ID and post ID from the post object
+    const userId = post.user?._id;
+    const postId = post._id;
+
+    fetch("/api/likes/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ user_id: userId, post_id: postId }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        }
+        throw new Error("Failed to like the post");
+      })
+      .then((data) => {
+        console.log("Like successful:", data);
+        // Optionally update UI or perform additional actions
+      })
+      .catch((error) => console.error("Error liking the post:", error));
+  };
 
   return (
     <Grid
@@ -81,7 +115,7 @@ const PostCard: React.FC = () => {
             </h4>
             {post.user?.imageUrls && post.user.imageUrls.length > 0 && (
               <img
-                src={post.user.imageUrls[0]}
+                src={post.user.imageUrls[0] || ""}
                 alt="User"
                 style={{ width: "50px", height: "50px", borderRadius: "50%" }}
               />
@@ -106,7 +140,7 @@ const PostCard: React.FC = () => {
               post.imageUrls.map((imageUrl, index) => (
                 <img
                   key={index}
-                  src={`https://socialapp-backend-ujiv.onrender.com/uploads/${imageUrl}`}
+                  src={`${baseUrl}/${imageUrl}`}
                   alt={`Post Image ${index}`}
                   style={{
                     width: "100%",
@@ -115,6 +149,22 @@ const PostCard: React.FC = () => {
                   }}
                 />
               ))}
+            {/* likes , comment ,   view comment*/}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                alignItems: "center",
+                gap: "10px",
+                fontWeight: "bold",
+                fontSize: isMobile ? "10px" : "12px",
+              }}
+            >
+              <Likes post={post} onLike={() => handleLike(post)} />
+              <Comments />
+              <p>8 comments</p>
+            </div>
           </div>
         ))}
       </Grid>
