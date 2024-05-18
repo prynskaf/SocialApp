@@ -1,9 +1,7 @@
-// postController.ts (Backend)
-
 import { Request, Response } from "express";
 import User from "../models/User";
 import Post from "../models/Post";
-import path from "path";
+import { uploadImageToS3 } from "../utils/uploadImageToS3";
 
 // Get all posts with user details
 export const getAllPosts = async (req: Request, res: Response) => {
@@ -35,46 +33,48 @@ export const getPostById = async (req: Request, res: Response) => {
 
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
+  console.log("Request object:", req);
   const { email, content } = req.body;
-  const imageFile = req.file; // This will have the file information
+  const imageFile = req.file;
 
   try {
-    // Check if the user exists based on the email address
+    console.log("Received image file:", imageFile);
+
+    if (!email || !content) {
+      return res
+        .status(400)
+        .json({ message: "Email and content are required" });
+    }
+
     const user = await User.findOne({ emailAddress: email });
 
-    // If the user doesn't exist, return an error
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    let imagePath = null;
-    // Check if an image was uploaded
+    let imageUrl = null;
     if (imageFile) {
-      // Handle file type validation (e.g., allow only images)
       if (!imageFile.mimetype.startsWith("image")) {
         return res
           .status(400)
           .json({ message: "Only image files are allowed" });
       }
 
-      // Save the image path or process as needed
-      imagePath = imageFile.path;
-
-      // Extract the filename from the full path
-      const filename = path.basename(imagePath);
-      // Store only the filename in the imageUrls array
-      imagePath = filename;
+      imageUrl = await uploadImageToS3(imageFile);
     }
 
     const newPost = await Post.create({
       user: user._id,
       content,
-      imageUrls: [imagePath], // Store only the filename
+      imageUrl,
     });
+
     res.status(201).json(newPost);
   } catch (error: any) {
     console.error("Error creating post:", error);
-    res.status(500).json({ message: "Failed to create post" });
+    res
+      .status(500)
+      .json({ message: "Failed to create post", error: error.message });
   }
 };
 
