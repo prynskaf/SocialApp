@@ -80,6 +80,7 @@ export const createPost = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to create post" });
   }
 };
+
 // Update a post by ID
 export const updatePost = async (req: Request, res: Response) => {
   const postId = req.params.id;
