@@ -2,11 +2,24 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import Post from "../models/Post";
 
+// Define the UploadedFile type
 interface UploadedFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
   mimetype: string;
+  size: number;
+  bucket: string;
+  key: string;
+  acl: string;
+  contentType: string;
+  contentDisposition: null | string;
+  storageClass: string;
+  serverSideEncryption: null | string;
+  metadata: any;
   location: string;
+  etag: string;
 }
-
 // Get all posts with user details
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
@@ -38,7 +51,7 @@ export const getPostById = async (req: Request, res: Response) => {
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
   const { email, content } = req.body;
-  const imageFile = req.file as UploadedFile;
+  const imageFile = req.file as unknown as UploadedFile;
 
   try {
     const user = await User.findOne({ emailAddress: email });
