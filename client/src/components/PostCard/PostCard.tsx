@@ -3,7 +3,6 @@ import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import TimeAgo from "react-timeago";
 import Likes from "../Likes/Likes";
 import Comments from "../Comments/Comments";
-// import { useUser } from "@clerk/clerk-react";
 
 interface Post {
   _id: string;
@@ -25,12 +24,6 @@ const PostCard: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [posts, setPosts] = useState<Post[]>([]);
-  // const { isSignedIn, user } = useUser();
-
-  const isDevelopment = process.env.NODE_ENV === "development";
-  const baseUrl = isDevelopment
-    ? "http://localhost:8080/uploads"
-    : "https://socialapp-backend-ujiv.onrender.com/uploads";
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -57,7 +50,6 @@ const PostCard: React.FC = () => {
   }, []);
 
   const handleLike = (post: Post) => {
-    // Retrieve user ID and post ID from the post object
     const userId = post.user?._id;
     const postId = post._id;
 
@@ -76,7 +68,6 @@ const PostCard: React.FC = () => {
       })
       .then((data) => {
         console.log("Like successful:", data);
-        // Optionally update UI or perform additional actions
       })
       .catch((error) => console.error("Error liking the post:", error));
   };
@@ -85,14 +76,12 @@ const PostCard: React.FC = () => {
     <Grid
       sx={{
         width: "100%",
-
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
         padding: isMobile ? "0 20px" : "0 20px",
         gap: "30px",
-        // border: "1px solid #ccc",
       }}
     >
       <Grid item xs={12} sm={9} md={6}>
@@ -107,7 +96,6 @@ const PostCard: React.FC = () => {
               paddingTop: "20px",
             }}
           >
-            {/* {post.user.firstName} */}
             <h4>
               {post.user
                 ? `${post.user.firstName} ${post.user.lastName}`
@@ -121,26 +109,24 @@ const PostCard: React.FC = () => {
               />
             )}
             <h6>
-              {" "}
               <TimeAgo date={post.timestamp} />
             </h6>
             <br />
             <p
               style={{
                 marginBottom: "10px",
-                maxWidth: "100%", // Ensures the paragraph fills its container horizontally
-                whiteSpace: "pre-wrap", // Allows text to wrap within the container
+                maxWidth: "100%",
+                whiteSpace: "pre-wrap",
               }}
             >
               {post.content}
             </p>
-
             {post.imageUrls &&
               post.imageUrls.length > 0 &&
               post.imageUrls.map((imageUrl, index) => (
                 <img
                   key={index}
-                  src={`${baseUrl}/${imageUrl}`}
+                  src={imageUrl}
                   alt={`Post Image ${index}`}
                   style={{
                     width: "100%",
@@ -149,7 +135,6 @@ const PostCard: React.FC = () => {
                   }}
                 />
               ))}
-            {/* likes , comment ,   view comment*/}
             <div
               style={{
                 display: "flex",
