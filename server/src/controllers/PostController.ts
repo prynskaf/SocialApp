@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Post from "../models/Post";
-import { uploadImageToS3 } from "../utils/uploadImageToS3";
+
+interface UploadedFile {
+  mimetype: string;
+  location: string;
+}
 
 // Get all posts with user details
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find()
-      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .populate("user", "firstName lastName imageUrls")
       .exec();
     res.status(200).json(posts);
   } catch (error: any) {
@@ -33,21 +37,11 @@ export const getPostById = async (req: Request, res: Response) => {
 
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
-  console.log("Request object:", req);
   const { email, content } = req.body;
-  const imageFile = req.file;
+  const imageFile = req.file as UploadedFile;
 
   try {
-    console.log("Received image file:", imageFile);
-
-    if (!email || !content) {
-      return res
-        .status(400)
-        .json({ message: "Email and content are required" });
-    }
-
     const user = await User.findOne({ emailAddress: email });
-
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -59,25 +53,20 @@ export const createPost = async (req: Request, res: Response) => {
           .status(400)
           .json({ message: "Only image files are allowed" });
       }
-
-      imageUrl = await uploadImageToS3(imageFile);
+      imageUrl = imageFile.location; // This should be the S3 URL
     }
 
     const newPost = await Post.create({
       user: user._id,
       content,
-      imageUrl,
+      imageUrls: imageUrl ? [imageUrl] : [], // Store the S3 URL
     });
-
     res.status(201).json(newPost);
   } catch (error: any) {
     console.error("Error creating post:", error);
-    res
-      .status(500)
-      .json({ message: "Failed to create post", error: error.message });
+    res.status(500).json({ message: "Failed to create post" });
   }
 };
-
 // Update a post by ID
 export const updatePost = async (req: Request, res: Response) => {
   const postId = req.params.id;
