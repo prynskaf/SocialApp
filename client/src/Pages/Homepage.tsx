@@ -1,13 +1,38 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Profile from "../components/Profile/Profile";
 import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
-import PostForm from "../components/Posts/PostForm.tsx";
-import PostCard from "../components/PostCard/PostCard.tsx";
+import PostForm from "../components/Posts/PostForm";
+import PostCard from "../components/PostCard/PostCard";
 
 const Homepage = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [posts, setPosts] = useState([]);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await fetch("/api/posts/");
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(
+          data.sort(
+            (a: { timestamp: string }, b: { timestamp: string }) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          )
+        );
+      } else {
+        console.error("Failed to fetch posts:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
   return (
     <Grid
       container
@@ -17,10 +42,7 @@ const Homepage = () => {
         width: "100%",
         display: "flex",
         py: isMobile ? null : "30px",
-        // justifyContent: isMobile ? "center" : "space-between",
-        // justifyContent: "space-between",
         px: "20px",
-        // gap: "30px",
         flex: "nowrap",
         whiteSpace: "nowrap",
       }}
@@ -29,7 +51,6 @@ const Homepage = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          // justifyContent: "flex-start",
           alignItems: "center",
           gap: "30px",
           marginButton: "110px",
@@ -49,8 +70,8 @@ const Homepage = () => {
           gap: "30px",
         }}
       >
-        <PostForm />
-        <PostCard />
+        <PostForm fetchPosts={fetchPosts} />
+        <PostCard posts={posts} fetchPosts={fetchPosts} />
       </Grid>
     </Grid>
   );

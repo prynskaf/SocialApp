@@ -3,7 +3,11 @@ import { useClerk } from "@clerk/clerk-react";
 import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-const PostForm: React.FC = () => {
+interface PostFormProps {
+  fetchPosts: () => void;
+}
+
+const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user } = useClerk();
@@ -52,6 +56,7 @@ const PostForm: React.FC = () => {
         console.log("Post submitted successfully");
         setPostText("");
         setFileName("");
+        fetchPosts(); // Fetch latest posts
       } else {
         console.error("Failed to submit post:", response.statusText);
         const errorData = await response.json();
@@ -67,7 +72,7 @@ const PostForm: React.FC = () => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ textAlign: "center", padding: isMobile ? " 20px 0" : "0 20px" }} // Center the form vertically
+      sx={{ textAlign: "center", padding: isMobile ? "20px 0" : "0 20px" }} // Center the form vertically
     >
       <Grid item xs={12} sm={10} md={8} lg={6}>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
@@ -79,12 +84,8 @@ const PostForm: React.FC = () => {
             gap={2}
             sx={{
               bgcolor: "#D9D9D9",
-              // bgcolor: "black",
               borderRadius: "20px",
               padding: "20px",
-              // border: "1px solid #ccc",
-              // padding: "20px",
-              // borderRadius: "8px",
             }}
           >
             {user && (
@@ -113,16 +114,15 @@ const PostForm: React.FC = () => {
                 placeholder="Share a post..."
                 style={{
                   width: isMobile ? "300px" : "400px",
-                  minHeight: "150px", // Adjusted the minHeight to make the textarea larger
+                  minHeight: "150px",
                   borderRadius: "20px",
                   border: "none",
-                  padding: isMobile ? "10px" : "  20px",
+                  padding: isMobile ? "10px" : "20px",
                   fontSize: isMobile ? "12px" : "16px",
                   outline: "none",
                   boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
                   resize: "none",
                   overflow: "auto",
-                  // textAlign: "center",
                 }}
                 value={postText}
                 onChange={handleTextChange}

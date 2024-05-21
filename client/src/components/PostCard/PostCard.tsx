@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import TimeAgo from "react-timeago";
 import Likes from "../Likes/Likes";
@@ -20,38 +20,14 @@ interface User {
   imageUrls?: string[];
 }
 
-const PostCard: React.FC = () => {
+interface PostCardProps {
+  posts: Post[];
+  fetchPosts: () => void;
+}
+
+const PostCard: React.FC<PostCardProps> = ({ posts, fetchPosts }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [posts, setPosts] = useState<Post[]>([]);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("/api/posts/");
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(
-            data.sort(
-              (a: { timestamp: string }, b: { timestamp: string }) =>
-                new Date(b.timestamp).getTime() -
-                new Date(a.timestamp).getTime()
-            )
-          );
-        } else {
-          console.error("Failed to fetch posts:", response.statusText);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-
-    fetchPosts();
-  }, []);
-
-  posts.map((post) => {
-    console.log("NAME: " + `${post.user?.firstName} ${post.user?.lastName}`);
-  });
 
   const handleLike = (post: Post) => {
     const userId = post.user?._id;
@@ -72,6 +48,7 @@ const PostCard: React.FC = () => {
       })
       .then((data) => {
         console.log("Like successful:", data);
+        fetchPosts(); // Fetch latest posts
       })
       .catch((error) => console.error("Error liking the post:", error));
   };
