@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 
 interface LikesProps {
@@ -10,8 +10,12 @@ interface LikesProps {
 }
 
 const Likes: React.FC<LikesProps> = ({ post, onLike }) => {
+  const [liked, setLiked] = useState(false);
+
   const handleLike = () => {
     onLike(post._id);
+    setLiked(true);
+    setTimeout(() => setLiked(false), 10000); // Reset color after 10 seconds
   };
 
   return (
@@ -22,8 +26,11 @@ const Likes: React.FC<LikesProps> = ({ post, onLike }) => {
         gap: "7px",
       }}
     >
-      <ThumbUpIcon style={{ fontSize: "20px" }} onClick={handleLike} />
-      {/* likes lenngth to show the number of lieks  per post */}
+      <ThumbUpIcon
+        style={{ fontSize: "20px", color: liked ? "blue" : "inherit" }}
+        onClick={handleLike}
+      />
+      {/* likes length to show the number of likes per post */}
       <span>{post.likes.length} Likes</span>
     </div>
   );
