@@ -3,11 +3,7 @@ import { useClerk } from "@clerk/clerk-react";
 import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
-interface PostFormProps {
-  fetchPosts: () => void;
-}
-
-const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
+const PostForm: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user } = useClerk();
@@ -56,7 +52,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
         console.log("Post submitted successfully");
         setPostText("");
         setFileName("");
-        fetchPosts(); // Fetch latest posts
       } else {
         console.error("Failed to submit post:", response.statusText);
         const errorData = await response.json();
@@ -114,11 +109,11 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 placeholder="Share a post..."
                 style={{
                   width: isMobile ? "300px" : "400px",
-                  minHeight: "150px",
+                  minHeight: "150px", // Adjusted the minHeight to make the textarea larger
                   borderRadius: "20px",
                   border: "none",
                   padding: isMobile ? "10px" : "20px",
-                  fontSize: isMobile ? "12px" : "16px",
+                  fontSize: "16px", // Ensure the font size is at least 16px
                   outline: "none",
                   boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
                   resize: "none",
