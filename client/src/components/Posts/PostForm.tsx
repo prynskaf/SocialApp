@@ -1,8 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
-import { Grid, useTheme, useMediaQuery, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Snackbar from "@mui/material/Snackbar";
+import { Grid, useMediaQuery, useTheme } from "@mui/material";
 
 interface PostFormProps {
   fetchPosts: () => void;
