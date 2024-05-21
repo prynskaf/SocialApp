@@ -49,6 +49,10 @@ const PostCard: React.FC = () => {
     fetchPosts();
   }, []);
 
+  posts.map((post) => {
+    console.log("NAME: " + `${post.user?.firstName} ${post.user?.lastName}`);
+  });
+
   const handleLike = (post: Post) => {
     const userId = post.user?._id;
     const postId = post._id;
