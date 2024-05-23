@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../models/User";
 import Post from "../models/Post";
+import Comment from "../models/comment";
 
 // Define the UploadedFile type
 interface UploadedFile {
@@ -20,6 +21,18 @@ interface UploadedFile {
   location: string;
   etag: string;
 }
+
+// Fetch comments by post ID
+export const getCommentsByPostId = async (req: Request, res: Response) => {
+  const postId = req.params.id;
+  try {
+    const comments = await Comment.find({ post: postId }).exec();
+    res.status(200).json(comments);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get all posts with user details
 export const getAllPosts = async (req: Request, res: Response) => {
   try {

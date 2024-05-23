@@ -4,11 +4,12 @@ import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
 import PostForm from "../components/Posts/PostForm";
 import PostCard from "../components/PostCard/PostCard";
+import { Post, User } from "../types";
 
-const Homepage = () => {
+const Homepage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchPosts = async () => {
     try {
@@ -32,6 +33,12 @@ const Homepage = () => {
   useEffect(() => {
     fetchPosts();
   }, []);
+
+  // Fallback currentUser
+  const currentUser: User =
+    posts.length > 0 && posts[0].user
+      ? posts[0].user
+      : { _id: "", firstName: "", lastName: "" };
 
   return (
     <Grid
@@ -71,7 +78,11 @@ const Homepage = () => {
         }}
       >
         <PostForm fetchPosts={fetchPosts} />
-        <PostCard posts={posts} fetchPosts={fetchPosts} />
+        <PostCard
+          posts={posts}
+          fetchPosts={fetchPosts}
+          currentUser={currentUser}
+        />
       </Grid>
     </Grid>
   );

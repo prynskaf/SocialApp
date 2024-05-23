@@ -12,6 +12,7 @@ import {
   getPostById,
   updatePost,
   deletePost,
+  getCommentsByPostId,
 } from "../controllers/PostController";
 import {
   getAllComments,
@@ -40,9 +41,10 @@ router.delete("/users/:id", deleteUser);
 // Post routes
 router.get("/posts", getAllPosts);
 router.get("/posts/:id", getPostById);
-router.post("/posts", upload.single("image"), createPost); // Use multer middleware here
+router.post("/posts", upload.single("image"), createPost);
 router.put("/posts/:id", updatePost);
 router.delete("/posts/:id", deletePost);
+router.get("/posts/:id/comments", getCommentsByPostId);
 
 // Comment routes
 router.get("/comments", getAllComments);
