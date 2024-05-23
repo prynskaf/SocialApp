@@ -27,7 +27,11 @@ const Likes: React.FC<LikesProps> = ({ post, onLike }) => {
       }}
     >
       <ThumbUpIcon
-        style={{ fontSize: "20px", color: liked ? "blue" : "inherit" }}
+        style={{
+          fontSize: "20px",
+          color: liked ? "blue" : "inherit",
+          cursor: "pointer",
+        }}
         onClick={handleLike}
       />
       {/* likes length to show the number of likes per post */}

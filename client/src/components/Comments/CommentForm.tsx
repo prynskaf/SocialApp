@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from "react";
-import { TextField, Button, Box, Typography } from "@mui/material";
+import { TextField, Button, Box, useTheme, useMediaQuery } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
 
 interface CommentFormProps {
@@ -15,12 +15,13 @@ const CommentForm: React.FC<CommentFormProps> = ({
 }) => {
   const [comment, setComment] = useState("");
   const [open, setOpen] = React.useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
-    console.log(event);
     if (reason === "clickaway") {
       return;
     }
@@ -73,7 +74,6 @@ const CommentForm: React.FC<CommentFormProps> = ({
         alignItems: "center",
         mt: 2,
         p: 2,
-        border: "1px solid #ccc",
         borderRadius: "8px",
         backgroundColor: "#f9f9f9",
         width: "100%",
@@ -84,11 +84,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
         open={open}
         autoHideDuration={5000}
         onClose={handleClose}
-        message="comment was successfully"
+        message="Comment was submitted successfully"
       />
-      <Typography variant="h6" gutterBottom>
-        Add a Comment
-      </Typography>
       <form
         onSubmit={handleSubmit}
         style={{
@@ -103,14 +100,27 @@ const CommentForm: React.FC<CommentFormProps> = ({
           onChange={(e) => setComment(e.target.value)}
           placeholder="Write your comment..."
           multiline
-          rows={4}
+          rows={2}
           variant="outlined"
           fullWidth
           required
         />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          Submit
-        </Button>
+        {comment.trim() && (
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              width: isMobile ? "100%" : "100px",
+              borderRadius: "10px",
+              bgcolor: "#7a20a1",
+              "&:hover": {
+                bgcolor: "#7a20a2",
+              },
+            }}
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Box>
   );

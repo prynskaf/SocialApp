@@ -2,7 +2,7 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import SendIcon from "@mui/icons-material/Send";
 import Snackbar from "@mui/material/Snackbar";
-import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Grid, useMediaQuery, useTheme } from "@mui/material";
 
 interface PostFormProps {
   fetchPosts: () => void;
@@ -106,7 +106,9 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
             alignItems="center"
             gap={2}
             sx={{
-              bgcolor: "#D9D9D9",
+              // bgcolor: "#D9D9D9",
+              backgroundColor: "#f9f9f9",
+              border: "1px solid #ccc",
               borderRadius: "20px",
               padding: "20px",
             }}
@@ -134,16 +136,17 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
             )}
             <Grid item xs={12}>
               <textarea
+                required
                 placeholder="Share a post..."
                 style={{
                   width: isMobile ? "300px" : "400px",
                   minHeight: "150px",
-                  borderRadius: "20px",
-                  border: "none",
+                  borderRadius: "10px",
+                  // border: "1px sollid blue",
                   padding: isMobile ? "10px" : "20px",
                   fontSize: "16px", // Ensure the font size is at least 16px
                   outline: "none",
-                  boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
+                  // boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
                   resize: "none",
                   overflow: "auto",
                 }}
@@ -180,7 +183,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                      maxWidth: isMobile ? "100px" : "150px",
+                      maxWidth: isMobile ? "120px" : "150px",
                       boxSizing: "border-box",
                     }}
                   >
@@ -188,10 +191,12 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                   </label>
                 </Grid>
                 <Grid item>
-                  <button
+                  <Button
                     type="submit"
-                    style={{
-                      backgroundColor: "#00BFFF",
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#7b20a2",
+                      color: "#fff",
                       border: "none",
                       borderRadius: "10px",
                       padding: "10px 20px",
@@ -200,11 +205,14 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                       alignItems: "center",
                       gap: "5px",
                       fontSize: isMobile ? "10px" : "12px",
+                      "&:hover": {
+                        bgcolor: "#7a20a2",
+                      },
                     }}
                   >
                     <SendIcon />
                     Send
-                  </button>
+                  </Button>
                 </Grid>
               </Grid>
             </Grid>

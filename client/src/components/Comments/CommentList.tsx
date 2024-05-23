@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
 import { Post, User, Comment } from "../../types";
+import TimeAgo from "react-timeago";
 
 interface CommentListProps {
   post: Post;
@@ -52,25 +53,55 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom>
-        Comments
-      </Typography>
       <List>
         {comments.map((comment: Comment) => (
-          <ListItem key={comment._id} alignItems="flex-start">
-            <ListItemText
-              primary={
-                users[comment.user]
+          <ListItem
+            key={comment._id}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              border: "1px solid #ccc",
+              borderRadius: "10px",
+              padding: "10px",
+              gap: "10px",
+              alignItems: "flex-start",
+              marginTop: "15px",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                fontWeight: "bold",
+              }}
+            >
+              <Typography variant="body1" fontWeight="bold">
+                {users[comment.user]
                   ? `${users[comment.user].firstName} ${
                       users[comment.user].lastName
                     }`
-                  : "Unknown User"
+                  : "Unknown User"}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                <TimeAgo date={comment.timestamp} live={false} />
+              </Typography>
+            </Box>
+            <ListItemText
+              secondary={
+                <Typography
+                  component="span"
+                  variant="body2"
+                  sx={{
+                    whiteSpace: "normal",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {comment.content}
+                </Typography>
               }
-              secondary={comment.content}
             />
-            <Typography variant="body2" color="textSecondary">
-              {new Date(comment.timestamp).toLocaleString()}
-            </Typography>
           </ListItem>
         ))}
       </List>

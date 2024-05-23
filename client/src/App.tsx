@@ -7,7 +7,9 @@ import Homepage from "./Pages/Homepage";
 const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
+      <div style={{ paddingBottom: "90px" }}>
+        <Navbar />
+      </div>
       <Routes>
         <Route path="/" element={<Homepage />} />
       </Routes>

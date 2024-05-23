@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import LoginIcon from "@mui/icons-material/Login";
 import {
@@ -8,11 +8,16 @@ import {
   SignInButton,
   UserButton,
 } from "@clerk/clerk-react";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const navigage = useNavigate();
 
+  const handleNavigate = () => {
+    navigage("/");
+  };
   return (
     <Grid
       container
@@ -25,25 +30,18 @@ const Navbar = () => {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        // position: "fixed",
+        position: "fixed",
+        zIndex: "10",
       }}
     >
       {/* Search input centered */}
-      <Grid item>
-        <input
-          type="search"
-          placeholder="search post..."
-          style={{
-            width: "100%",
-            height: "40px",
-            borderRadius: "20px",
-            border: "none",
-            padding: isSmallScreen ? "0 10px" : "0 70px",
-            fontSize: "20px",
-            outline: "none",
-            boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
-          }}
-        />
+      <Grid item onClick={handleNavigate} sx={{ cursor: "pointer" }}>
+        <Typography sx={{ fontWeight: "bold", fontSize: "1.5rem" }}>
+          <span style={{ color: "#8432A7", fontWeight: "bolder" }}>S</span>
+          ocial
+          <span style={{ color: "#8432A7", fontWeight: "bolder" }}>C</span>
+          onnect
+        </Typography>
       </Grid>
 
       {/* Notification icon and sign-in/sign-out buttons aligned to the right */}

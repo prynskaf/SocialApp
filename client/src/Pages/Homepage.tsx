@@ -53,6 +53,7 @@ const Homepage: React.FC = () => {
       ? posts[0].user
       : { _id: "", firstName: "", lastName: "" };
 
+  console.log("coming from currenct user", currentUser);
   return (
     <Grid
       container

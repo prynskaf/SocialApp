@@ -125,6 +125,8 @@ const PostCard: React.FC<PostCardProps> = ({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
+                fontWeight: "bold",
+                fontSize: isMobile ? "10px" : "12px",
               }}
             >
               <Likes post={post} onLike={() => handleLike(post)} />
@@ -132,6 +134,9 @@ const PostCard: React.FC<PostCardProps> = ({
                 postId={post._id}
                 onClick={() => toggleCommentForm(post._id)}
               />
+              {!visibleCommentForm[post._id] && (
+                <p>{post.comments.length} comments</p>
+              )}
             </div>
             {visibleCommentForm[post._id] && (
               <div>
