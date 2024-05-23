@@ -19,9 +19,10 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = (
-    _event: React.SyntheticEvent | Event,
+    event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
+    console.log(event);
     if (reason === "clickaway") {
       return;
     }
@@ -74,6 +75,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
         alignItems: "center",
         mt: 2,
         p: 2,
+        // border: "1px solid #ccc",
         borderRadius: "8px",
         backgroundColor: "#f9f9f9",
         width: "100%",
@@ -84,8 +86,11 @@ const CommentForm: React.FC<CommentFormProps> = ({
         open={open}
         autoHideDuration={5000}
         onClose={handleClose}
-        message="Comment was submitted successfully"
+        message="comment was successfully"
       />
+      {/* <Typography variant="h6" gutterBottom>
+        Add a Comment
+      </Typography> */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -105,22 +110,20 @@ const CommentForm: React.FC<CommentFormProps> = ({
           fullWidth
           required
         />
-        {comment.trim() && (
-          <Button
-            type="submit"
-            variant="contained"
-            sx={{
-              width: isMobile ? "100%" : "100px",
-              borderRadius: "10px",
-              bgcolor: "#7a20a1",
-              "&:hover": {
-                bgcolor: "#7a20a2",
-              },
-            }}
-          >
-            Submit
-          </Button>
-        )}
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            width: isMobile ? "100%" : "100px",
+            borderRadius: "10px",
+            bgcolor: "#7a20a1",
+            "&:hover": {
+              bgcolor: "#7a20a2", // Specify the color you want on hover
+            },
+          }}
+        >
+          Submit
+        </Button>
       </form>
     </Box>
   );

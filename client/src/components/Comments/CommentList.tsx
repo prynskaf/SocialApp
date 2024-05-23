@@ -51,10 +51,18 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
     return <Typography>No comments yet.</Typography>;
   }
 
+  // Sort comments from newest to oldest
+  const sortedComments = comments
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
   return (
     <Box>
       <List>
-        {comments.map((comment: Comment) => (
+        {sortedComments.map((comment: Comment) => (
           <ListItem
             key={comment._id}
             sx={{
