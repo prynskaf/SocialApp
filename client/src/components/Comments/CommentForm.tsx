@@ -19,7 +19,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = (
-    event: React.SyntheticEvent | Event,
+    _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === "clickaway") {
