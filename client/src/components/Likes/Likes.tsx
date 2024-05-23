@@ -4,9 +4,9 @@ import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 interface LikesProps {
   post: {
     _id: string;
-    likes: Array<{ _id: string }>; // Assuming likes are an array of objects with an _id
+    likes: Array<{ _id: string }>;
   };
-  onLike: (postId: string) => void; // Function that takes a postId and does not return anything
+  onLike: (postId: string) => void;
 }
 
 const Likes: React.FC<LikesProps> = ({ post, onLike }) => {

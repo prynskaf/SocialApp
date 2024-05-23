@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Grid, useTheme, useMediaQuery } from "@mui/material";
 import TimeAgo from "react-timeago";
 import Likes from "../Likes/Likes";
 import Comments from "../Comments/Comments";
 import CommentForm from "../Comments/CommentForm";
 import CommentList from "../Comments/CommentList";
-import { Post, User, Comment } from "../../types";
+import { Post, User } from "../../types";
 
 interface PostCardProps {
   posts: Post[];
@@ -55,27 +55,6 @@ const PostCard: React.FC<PostCardProps> = ({
       [postId]: !prev[postId],
     }));
   };
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        for (const post of posts) {
-          const response = await fetch(`/api/posts/${post._id}/comments`);
-          if (response.ok) {
-            const data: Comment[] = await response.json();
-            post.comments = data;
-          } else {
-            throw new Error("Failed to fetch comments");
-          }
-        }
-        fetchPosts(); // Trigger re-render after fetching comments
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    };
-
-    fetchComments();
-  }, [posts, fetchPosts]);
 
   return (
     <Grid
@@ -156,7 +135,11 @@ const PostCard: React.FC<PostCardProps> = ({
             </div>
             {visibleCommentForm[post._id] && (
               <div>
-                <CommentForm userId={currentUser._id} postId={post._id} />
+                <CommentForm
+                  userId={currentUser._id}
+                  postId={post._id}
+                  fetchPosts={fetchPosts}
+                />
                 <CommentList post={post} />
               </div>
             )}

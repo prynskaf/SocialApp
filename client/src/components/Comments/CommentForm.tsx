@@ -1,13 +1,32 @@
 import React, { useState, FormEvent } from "react";
 import { TextField, Button, Box, Typography } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
 
 interface CommentFormProps {
   userId: string;
   postId: string;
+  fetchPosts: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ userId, postId }) => {
+const CommentForm: React.FC<CommentFormProps> = ({
+  userId,
+  postId,
+  fetchPosts,
+}) => {
   const [comment, setComment] = useState("");
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    console.log(event);
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(!open);
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -33,6 +52,8 @@ const CommentForm: React.FC<CommentFormProps> = ({ userId, postId }) => {
       if (response.ok) {
         console.log("Comment submitted successfully");
         setComment(""); // Reset the comment field on successful submission
+        fetchPosts(); // Fetch latest posts to show the new comment
+        setOpen(true);
       } else {
         console.error("Failed to submit comment:", response.statusText);
         const errorData = await response.json();
@@ -59,6 +80,12 @@ const CommentForm: React.FC<CommentFormProps> = ({ userId, postId }) => {
         boxSizing: "border-box",
       }}
     >
+      <Snackbar
+        open={open}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="comment was successfully"
+      />
       <Typography variant="h6" gutterBottom>
         Add a Comment
       </Typography>

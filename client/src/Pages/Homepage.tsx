@@ -16,9 +16,22 @@ const Homepage: React.FC = () => {
       const response = await fetch("/api/posts/");
       if (response.ok) {
         const data = await response.json();
+        const postsWithComments = await Promise.all(
+          data.map(async (post: Post) => {
+            const commentsResponse = await fetch(
+              `/api/posts/${post._id}/comments`
+            );
+            if (commentsResponse.ok) {
+              post.comments = await commentsResponse.json();
+            } else {
+              post.comments = []; // Handle case where comments fetch fails
+            }
+            return post;
+          })
+        );
         setPosts(
-          data.sort(
-            (a: { timestamp: string }, b: { timestamp: string }) =>
+          postsWithComments.sort(
+            (a, b) =>
               new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           )
         );
