@@ -10,6 +10,7 @@ interface CommentListProps {
 const CommentList: React.FC<CommentListProps> = ({ post }) => {
   const { comments } = post;
   const [users, setUsers] = useState<{ [key: string]: User }>({});
+  console.log("comments:", post);
 
   useEffect(() => {
     // Fetch user data for all unique user IDs in comments
@@ -48,7 +49,7 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
   }, [comments]); // Fetch user data whenever the list of comments changes
 
   if (comments.length === 0) {
-    return <Typography>No comments yet.</Typography>;
+    return <Typography></Typography>;
   }
 
   // Sort comments from newest to oldest
