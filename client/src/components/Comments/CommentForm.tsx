@@ -1,13 +1,13 @@
 import React, { useState, FormEvent } from "react";
 import { TextField, Button, Box, useTheme, useMediaQuery } from "@mui/material";
-import Snackbar from "@mui/material/Snackbar";
 import { User } from "../../types";
+import { toast } from "sonner";
 
 interface CommentFormProps {
   user: User;
   postId: string;
   fetchPosts: () => void;
-  userEmail: string; // Add userEmail prop
+  userEmail: string;
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({
@@ -17,21 +17,10 @@ const CommentForm: React.FC<CommentFormProps> = ({
   userEmail, // Receive userEmail prop
 }) => {
   const [comment, setComment] = useState("");
-  const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const handleClose = (
-    _event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(!open);
-  };
-
+  // Inside your component
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
@@ -39,6 +28,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
       console.error("Comment is required.");
       return;
     }
+
+    const loadingToastId = toast.loading("Posting comment...");
 
     try {
       const response = await fetch("/api/comments", {
@@ -55,20 +46,23 @@ const CommentForm: React.FC<CommentFormProps> = ({
 
       if (response.ok) {
         console.log("Comment submitted successfully");
-        setComment(""); // Reset the comment field on successful submission
-        fetchPosts(); // Fetch latest posts to show the new comment
-        setOpen(true);
+        setComment("");
+        fetchPosts();
+        toast.dismiss(loadingToastId);
+        toast.success("Comment was successfully posted");
       } else {
         console.error("Failed to submit comment:", response.statusText);
         const errorData = await response.json();
         console.error("Error Details:", errorData.message);
+        toast.dismiss(loadingToastId);
+        toast.error(errorData.message);
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.dismiss(loadingToastId);
+      toast.error("An error occurred while posting the comment.");
     }
   };
-
-  // console.log("User email:", userEmail);
 
   return (
     <Box
@@ -85,12 +79,6 @@ const CommentForm: React.FC<CommentFormProps> = ({
         boxSizing: "border-box",
       }}
     >
-      <Snackbar
-        open={open}
-        autoHideDuration={5000}
-        onClose={handleClose}
-        message="Comment was successfully"
-      />
       <form
         onSubmit={handleSubmit}
         style={{

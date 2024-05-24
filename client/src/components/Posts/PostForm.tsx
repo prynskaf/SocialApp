@@ -1,8 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import SendIcon from "@mui/icons-material/Send";
-import Snackbar from "@mui/material/Snackbar";
 import { Button, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { toast } from "sonner";
 
 interface PostFormProps {
   fetchPosts: () => void;
@@ -14,20 +14,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
   const { user } = useClerk();
   const [fileName, setFileName] = useState("");
   const [postText, setPostText] = useState("");
-
-  const [open, setOpen] = React.useState(false);
-
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    console.log(event);
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(!open);
-  };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -42,6 +28,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
     setPostText(event.target.value);
   };
 
+  // Inside your component
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -52,6 +39,8 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
       console.error("Content is required for the post.");
       return; // Stop execution if no content
     }
+
+    const loadingToastId = toast.loading("Posting...");
 
     try {
       const formData = new FormData();
@@ -72,14 +61,19 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
         setPostText("");
         setFileName("");
         fetchPosts(); // Fetch latest posts
-        setOpen(true);
+        toast.dismiss(loadingToastId);
+        toast.success("Post was successfully posted");
       } else {
         console.error("Failed to submit post:", response.statusText);
         const errorData = await response.json();
         console.error("Error Details:", errorData.message);
+        toast.dismiss(loadingToastId);
+        toast.error(errorData.message);
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.dismiss(loadingToastId);
+      toast.error("An error occurred while posting.");
     }
   };
 
@@ -90,13 +84,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
       alignItems="center"
       sx={{ textAlign: "center", padding: isMobile ? "20px 0" : "0 20px" }} // Center the form vertically
     >
-      <Snackbar
-        open={open}
-        autoHideDuration={5000}
-        onClose={handleClose}
-        message="Post was successfully posted"
-      />
-
       <Grid item xs={12} sm={10} md={8} lg={6}>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <Grid
@@ -211,7 +198,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                     }}
                   >
                     <SendIcon />
-                    Send
                   </Button>
                 </Grid>
               </Grid>
