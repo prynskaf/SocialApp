@@ -6,6 +6,7 @@ import Comments from "../Comments/Comments";
 import CommentForm from "../Comments/CommentForm";
 import CommentList from "../Comments/CommentList";
 import { Post, User } from "../../types";
+import { toast } from "sonner";
 
 interface PostCardProps {
   posts: Post[];
@@ -26,7 +27,12 @@ const PostCard: React.FC<PostCardProps> = ({
   }>({});
 
   const handleLike = (post: Post) => {
-    const userId = currentUser?._id;
+    if (!currentUser || !currentUser._id) {
+      toast.error("Oops... Signin before you can like this post");
+      return;
+    }
+
+    const userId = currentUser._id;
     const postId = post._id;
 
     fetch("/api/likes/", {
@@ -45,8 +51,12 @@ const PostCard: React.FC<PostCardProps> = ({
       .then((data) => {
         console.log("Like successful:", data);
         fetchPosts(); // Fetch latest posts
+        toast.success("Post liked successfully");
       })
-      .catch((error) => console.error("Error liking the post:", error));
+      .catch((error) => {
+        console.error("Error liking the post:", error);
+        toast.error("An error occurred while liking the post");
+      });
   };
 
   const toggleCommentForm = (postId: string) => {
