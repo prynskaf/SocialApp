@@ -55,7 +55,7 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
     );
 
   if (sortedComments.length === 0) {
-    return <Typography>No comments yet.</Typography>;
+    return <Typography></Typography>;
   }
 
   return (
