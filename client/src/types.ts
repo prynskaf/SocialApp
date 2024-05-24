@@ -3,6 +3,7 @@ export interface User {
   firstName: string;
   lastName: string;
   imageUrls?: string[];
+  emailAddress: string;
 }
 
 export interface Post {

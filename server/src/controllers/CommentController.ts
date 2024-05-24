@@ -1,11 +1,15 @@
 import { Request, Response } from "express";
 import Comment from "../models/comment";
 import Post from "../models/Post";
+import User from "../models/User";
 
 // Get all comments
 export const getAllComments = async (req: Request, res: Response) => {
   try {
-    const comments = await Comment.find();
+    const comments = await Comment.find().populate(
+      "user",
+      "firstName lastName"
+    );
     res.status(200).json(comments);
   } catch (error: any) {
     res.status(500).json({ message: error.message });
@@ -16,7 +20,10 @@ export const getAllComments = async (req: Request, res: Response) => {
 export const getCommentById = async (req: Request, res: Response) => {
   const commentId = req.params.id;
   try {
-    const comment = await Comment.findById(commentId);
+    const comment = await Comment.findById(commentId).populate(
+      "user",
+      "firstName lastName"
+    );
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });
     }
@@ -28,11 +35,18 @@ export const getCommentById = async (req: Request, res: Response) => {
 
 // Create a new comment
 export const createComment = async (req: Request, res: Response) => {
-  const { user_id, post_id, content } = req.body;
+  const { email, post_id, content } = req.body;
+
   try {
+    // Find the user by email
+    const user = await User.findOne({ emailAddress: email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     // Create the comment
     const newComment = await Comment.create({
-      user: user_id,
+      user: user._id,
       post: post_id,
       content,
     });
@@ -56,7 +70,6 @@ export const createComment = async (req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 // Update a comment by ID
 export const updateComment = async (req: Request, res: Response) => {
   const commentId = req.params.id;

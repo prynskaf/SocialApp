@@ -10,7 +10,7 @@ import { Post, User } from "../../types";
 interface PostCardProps {
   posts: Post[];
   fetchPosts: () => void;
-  currentUser: User;
+  currentUser: User | null;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -26,7 +26,7 @@ const PostCard: React.FC<PostCardProps> = ({
   }>({});
 
   const handleLike = (post: Post) => {
-    const userId = post.user?._id;
+    const userId = currentUser?._id;
     const postId = post._id;
 
     fetch("/api/likes/", {
@@ -54,6 +54,7 @@ const PostCard: React.FC<PostCardProps> = ({
       ...prev,
       [postId]: !prev[postId],
     }));
+    fetchPosts();
   };
 
   return (
@@ -135,18 +136,28 @@ const PostCard: React.FC<PostCardProps> = ({
                 onClick={() => toggleCommentForm(post._id)}
               />
               {!visibleCommentForm[post._id] && (
-                <p>{post.comments.length} comments</p>
+                <p
+                  style={{ cursor: "pointer", color: "blue" }}
+                  onClick={() => toggleCommentForm(post._id)}
+                >
+                  {post.comments.length} comments
+                </p>
               )}
             </div>
             {visibleCommentForm[post._id] && (
-              <div>
-                <CommentForm
-                  userId={currentUser._id}
-                  postId={post._id}
-                  fetchPosts={fetchPosts}
-                />
-                <CommentList post={post} />
-              </div>
+              <>
+                {currentUser && currentUser && (
+                  <div>
+                    <CommentForm
+                      user={currentUser}
+                      postId={post._id}
+                      fetchPosts={fetchPosts}
+                      userEmail={currentUser.emailAddress}
+                    />
+                    <CommentList post={post} />
+                  </div>
+                )}
+              </>
             )}
           </div>
         </Grid>

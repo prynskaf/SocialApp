@@ -10,26 +10,22 @@ interface CommentListProps {
 const CommentList: React.FC<CommentListProps> = ({ post }) => {
   const { comments } = post;
   const [users, setUsers] = useState<{ [key: string]: User }>({});
-  console.log("comments:", post);
 
   useEffect(() => {
     // Fetch user data for all unique user IDs in comments
     const fetchUserData = async () => {
-      try {
-        const uniqueUserIds = Array.from(
-          new Set(comments.map((comment: Comment) => comment.user))
-        );
+      const uniqueUserIds = Array.from(
+        new Set(comments.map((comment: Comment) => comment.user))
+      );
 
-        // Fetch user data for each unique user ID
+      try {
         const fetchedUsers = await Promise.all(
           uniqueUserIds.map(async (userId: string) => {
             const response = await fetch(`/api/users/${userId}`);
-            if (response.ok) {
-              const userData = await response.json();
-              return userData;
-            } else {
+            if (!response.ok) {
               throw new Error("Failed to fetch user data");
             }
+            return response.json();
           })
         );
 
@@ -45,12 +41,10 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
       }
     };
 
-    fetchUserData();
+    if (comments.length > 0) {
+      fetchUserData();
+    }
   }, [comments]); // Fetch user data whenever the list of comments changes
-
-  if (comments.length === 0) {
-    return <Typography></Typography>;
-  }
 
   // Sort comments from newest to oldest
   const sortedComments = comments
@@ -59,6 +53,10 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
       (a, b) =>
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
+
+  if (sortedComments.length === 0) {
+    return <Typography>No comments yet.</Typography>;
+  }
 
   return (
     <Box>

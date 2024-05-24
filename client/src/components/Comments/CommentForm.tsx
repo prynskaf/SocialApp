@@ -1,17 +1,20 @@
 import React, { useState, FormEvent } from "react";
 import { TextField, Button, Box, useTheme, useMediaQuery } from "@mui/material";
 import Snackbar from "@mui/material/Snackbar";
+import { User } from "../../types";
 
 interface CommentFormProps {
-  userId: string;
+  user: User;
   postId: string;
   fetchPosts: () => void;
+  userEmail: string; // Add userEmail prop
 }
 
 const CommentForm: React.FC<CommentFormProps> = ({
-  userId,
+  // user,
   postId,
   fetchPosts,
+  userEmail, // Receive userEmail prop
 }) => {
   const [comment, setComment] = useState("");
   const [open, setOpen] = React.useState(false);
@@ -19,10 +22,9 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleClose = (
-    event: React.SyntheticEvent | Event,
+    _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
-    console.log(event);
     if (reason === "clickaway") {
       return;
     }
@@ -45,7 +47,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: userId,
+          email: userEmail, // Use email address
           post_id: postId,
           content: comment,
         }),
@@ -66,6 +68,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
     }
   };
 
+  // console.log("User email:", userEmail);
+
   return (
     <Box
       component="div"
@@ -75,7 +79,6 @@ const CommentForm: React.FC<CommentFormProps> = ({
         alignItems: "center",
         mt: 2,
         p: 2,
-        // border: "1px solid #ccc",
         borderRadius: "8px",
         backgroundColor: "#f9f9f9",
         width: "100%",
@@ -86,11 +89,8 @@ const CommentForm: React.FC<CommentFormProps> = ({
         open={open}
         autoHideDuration={5000}
         onClose={handleClose}
-        message="comment was successfully"
+        message="Comment was successfully"
       />
-      {/* <Typography variant="h6" gutterBottom>
-        Add a Comment
-      </Typography> */}
       <form
         onSubmit={handleSubmit}
         style={{
@@ -110,20 +110,22 @@ const CommentForm: React.FC<CommentFormProps> = ({
           fullWidth
           required
         />
-        <Button
-          type="submit"
-          variant="contained"
-          sx={{
-            width: isMobile ? "100%" : "100px",
-            borderRadius: "10px",
-            bgcolor: "#7a20a1",
-            "&:hover": {
-              bgcolor: "#7a20a2", // Specify the color you want on hover
-            },
-          }}
-        >
-          Submit
-        </Button>
+        {comment.trim() && (
+          <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              width: isMobile ? "100%" : "100px",
+              borderRadius: "10px",
+              bgcolor: "#7a20a1",
+              "&:hover": {
+                bgcolor: "#7a20a2", // Specify the color you want on hover
+              },
+            }}
+          >
+            Submit
+          </Button>
+        )}
       </form>
     </Box>
   );
