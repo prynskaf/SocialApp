@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Profile from "../components/Profile/Profile";
 import Widget from "../components/Widget/Widget";
 import { Grid, useMediaQuery, useTheme } from "@mui/material";
@@ -14,13 +14,9 @@ const Homepage: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const { user } = useUser();
 
-  console.log("currentUser: ", currentUser);
-  console.log(
-    "User Email from homepage:",
-    user?.emailAddresses[0].emailAddress
-  );
+  // console.log(currentUser);
 
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     try {
       const response = await fetch("/api/posts/");
       if (response.ok) {
@@ -44,28 +40,29 @@ const Homepage: React.FC = () => {
               new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
           )
         );
-
-        if (
-          postsWithComments.length > 0 &&
-          user?.emailAddresses &&
-          user.emailAddresses.length > 0
-        ) {
-          setCurrentUser({
-            ...postsWithComments[0].user,
-            emailAddress: user?.emailAddresses[0]?.emailAddress,
-          });
-        }
       } else {
         console.error("Failed to fetch posts:", response.statusText);
       }
     } catch (error) {
       console.error("Error:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPosts]);
+
+  useEffect(() => {
+    if (user) {
+      setCurrentUser({
+        _id: user.id, // Assuming user.id is where the user ID is stored
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        emailAddress: user.emailAddresses[0]?.emailAddress || "",
+        userImage: user.imageUrl || "",
+      });
+    }
+  }, [user]);
 
   return (
     <Grid
@@ -90,7 +87,7 @@ const Homepage: React.FC = () => {
           marginBottom: "110px",
         }}
       >
-        <Profile />
+        <Profile fetchPosts={fetchPosts} />
         <Widget />
       </Grid>
       <Grid
@@ -105,7 +102,6 @@ const Homepage: React.FC = () => {
         }}
       >
         <PostForm fetchPosts={fetchPosts} />
-
         <PostCard
           posts={posts}
           fetchPosts={fetchPosts}

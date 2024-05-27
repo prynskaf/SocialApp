@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, List, ListItem, ListItemText } from "@mui/material";
 import { Post, User, Comment } from "../../types";
 import TimeAgo from "react-timeago";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { toast } from "sonner";
 
 interface CommentListProps {
   post: Post;
+  currentUser: User | null;
+  fetchPosts: () => void; // Add fetchPosts to refresh the post list after deletion
 }
 
-const CommentList: React.FC<CommentListProps> = ({ post }) => {
+const CommentList: React.FC<CommentListProps> = ({
+  post,
+  currentUser,
+  fetchPosts,
+}) => {
   const { comments } = post;
   const [users, setUsers] = useState<{ [key: string]: User }>({});
 
@@ -54,6 +62,34 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
 
+  const handleDeleteComment = async (commentId: string) => {
+    const loadingToastId = toast.loading("Deleting...");
+
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("Comment deleted successfully");
+        fetchPosts(); // Fetch latest posts
+        toast.dismiss(loadingToastId);
+        toast.success("Comment was successfully deleted");
+        fetchPosts(); // Fetch latest posts
+      } else {
+        console.error("Failed to delete comment:", response.statusText);
+        const errorData = await response.json();
+        console.error("Error Details:", errorData.message);
+        toast.dismiss(loadingToastId);
+        toast.error(errorData.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.dismiss(loadingToastId);
+      toast.error("An error occurred while deleting the comment.");
+    }
+  };
+
   if (sortedComments.length === 0) {
     return <Typography></Typography>;
   }
@@ -84,16 +120,30 @@ const CommentList: React.FC<CommentListProps> = ({ post }) => {
                 fontWeight: "bold",
               }}
             >
-              <Typography variant="body1" fontWeight="bold">
-                {users[comment.user]
-                  ? `${users[comment.user].firstName} ${
-                      users[comment.user].lastName
-                    }`
-                  : "Unknown User"}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                <TimeAgo date={comment.timestamp} live={false} />
-              </Typography>
+              <div>
+                <Typography variant="body1" fontWeight="bold">
+                  {users[comment.user]
+                    ? `${users[comment.user].firstName} ${
+                        users[comment.user].lastName
+                      }`
+                    : "Unknown User"}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  <TimeAgo date={comment.timestamp} live={false} />
+                </Typography>
+              </div>
+              {currentUser?._id === comment.user && (
+                <DeleteIcon
+                  onClick={() => handleDeleteComment(comment._id)}
+                  sx={{
+                    color: "gray",
+                    cursor: "pointer",
+                    "&:hover": {
+                      color: "red",
+                    },
+                  }}
+                />
+              )}
             </Box>
             <ListItemText
               secondary={

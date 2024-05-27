@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface PostDocument extends Document {
-  user: mongoose.Types.ObjectId;
+  user: string; // Change from mongoose.Types.ObjectId to string
   content: string;
   imageUrls: string[];
   comments: mongoose.Types.ObjectId[];
@@ -10,7 +10,7 @@ export interface PostDocument extends Document {
 }
 
 const PostSchema = new Schema<PostDocument>({
-  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  user: { type: String, ref: "User", required: true }, // Change from Schema.Types.ObjectId to String
   content: { type: String, required: true },
   imageUrls: { type: [String], required: false },
   comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],

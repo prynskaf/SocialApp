@@ -28,12 +28,8 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
     setPostText(event.target.value);
   };
 
-  // Inside your component
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    console.log("User Email:", user?.emailAddresses[0].emailAddress);
-    console.log("Post Content:", postText);
 
     if (!postText || postText.trim() === "") {
       console.error("Content is required for the post.");
@@ -44,7 +40,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
 
     try {
       const formData = new FormData();
-      formData.append("email", user?.emailAddresses[0].emailAddress ?? "");
+      formData.append("userId", user?.id ?? "");
       formData.append("content", postText);
 
       if (event.currentTarget.image.files[0]) {
@@ -93,7 +89,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
             alignItems="center"
             gap={2}
             sx={{
-              // bgcolor: "#D9D9D9",
               backgroundColor: "#f9f9f9",
               border: "1px solid #ccc",
               borderRadius: "20px",
@@ -129,11 +124,9 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                   width: isMobile ? "300px" : "400px",
                   minHeight: "150px",
                   borderRadius: "10px",
-                  // border: "1px sollid blue",
                   padding: isMobile ? "10px" : "20px",
                   fontSize: "16px", // Ensure the font size is at least 16px
                   outline: "none",
-                  // boxShadow: "0px 0px 10px 0px rgba(0,0,0,0.2)",
                   resize: "none",
                   overflow: "auto",
                 }}

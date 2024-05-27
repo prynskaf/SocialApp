@@ -3,6 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
 import Homepage from "./Pages/Homepage";
+import NotFound from "./components/NotFound";
 
 const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       </div>
       <Routes>
         <Route path="/" element={<Homepage />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );

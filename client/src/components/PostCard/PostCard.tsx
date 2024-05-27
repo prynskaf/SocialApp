@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, useTheme, useMediaQuery } from "@mui/material";
+import { Grid, useTheme, useMediaQuery, Typography } from "@mui/material";
 import TimeAgo from "react-timeago";
 import Likes from "../Likes/Likes";
 import Comments from "../Comments/Comments";
@@ -7,6 +7,7 @@ import CommentForm from "../Comments/CommentForm";
 import CommentList from "../Comments/CommentList";
 import { Post, User } from "../../types";
 import { toast } from "sonner";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface PostCardProps {
   posts: Post[];
@@ -28,7 +29,7 @@ const PostCard: React.FC<PostCardProps> = ({
 
   const handleLike = (post: Post) => {
     if (!currentUser || !currentUser._id) {
-      toast.error("Oops... Signin before you can like this post");
+      toast.error("Oops... Log in before you can like this post");
       return;
     }
 
@@ -64,7 +65,33 @@ const PostCard: React.FC<PostCardProps> = ({
       ...prev,
       [postId]: !prev[postId],
     }));
-    fetchPosts();
+  };
+
+  const handleDelete = async (postId: string) => {
+    const loadingToastId = toast.loading("Deleting...");
+
+    try {
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        console.log("Post deleted successfully");
+        fetchPosts(); // Fetch latest posts
+        toast.dismiss(loadingToastId);
+        toast.success("Post was successfully deleted");
+      } else {
+        console.error("Failed to delete post:", response.statusText);
+        const errorData = await response.json();
+        console.error("Error Details:", errorData.message);
+        toast.dismiss(loadingToastId);
+        toast.error(errorData.message);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.dismiss(loadingToastId);
+      toast.error("An error occurred while deleting the post.");
+    }
   };
 
   return (
@@ -99,11 +126,12 @@ const PostCard: React.FC<PostCardProps> = ({
                 display: "flex",
                 alignItems: "center",
                 marginBottom: "10px",
+                justifyContent: "space-between",
               }}
             >
-              {post.user.imageUrls && post.user.imageUrls.length > 0 && (
+              {post.user.userImage && post.user.userImage.length > 0 && (
                 <img
-                  src={post.user.imageUrls[0] || ""}
+                  src={post.user.userImage[0] || ""}
                   alt="User"
                   style={{
                     width: "50px",
@@ -115,8 +143,25 @@ const PostCard: React.FC<PostCardProps> = ({
               )}
               <div>
                 <h4>{`${post.user.firstName} ${post.user.lastName}`}</h4>
-                <TimeAgo date={post.timestamp} live={false} />
+                {/* <TimeAgo date={post.timestamp} live={false} /> */}
+                <Typography variant="body2" color="textSecondary">
+                  <TimeAgo date={post.timestamp} live={false} />
+                </Typography>
               </div>
+              {currentUser?._id === post.user._id && (
+                <div>
+                  <DeleteIcon
+                    onClick={() => handleDelete(post._id)}
+                    sx={{
+                      color: "gray",
+                      cursor: "pointer",
+                      "&:hover": {
+                        color: "red",
+                      },
+                    }}
+                  />
+                </div>
+              )}
             </div>
             <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
             {post.imageUrls.map((imageUrl, index) => (
@@ -128,6 +173,7 @@ const PostCard: React.FC<PostCardProps> = ({
                   width: "100%",
                   height: "auto",
                   marginBottom: "10px",
+                  marginTop: "10px",
                 }}
               />
             ))}
@@ -164,7 +210,11 @@ const PostCard: React.FC<PostCardProps> = ({
                       fetchPosts={fetchPosts}
                       userEmail={currentUser.emailAddress}
                     />
-                    <CommentList post={post} />
+                    <CommentList
+                      post={post}
+                      currentUser={currentUser}
+                      fetchPosts={fetchPosts}
+                    />
                   </div>
                 )}
               </>

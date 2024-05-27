@@ -4,16 +4,24 @@ import React, { useEffect } from "react";
 
 // Define UserData interface with nullable properties
 interface UserData {
+  _id: string;
   firstName: string;
   lastName: string;
-  imageUrl: string;
+  userImage?: string;
   emailAddress: string;
 }
 
-const Profile: React.FC = () => {
+interface ProfileProps {
+  fetchPosts: () => void;
+}
+
+// user_2fowuBhvgizKKgpgDGNL8w4GxkQ
+
+const Profile: React.FC<ProfileProps> = ({ fetchPosts }) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { isSignedIn, user } = useUser();
+  // console.log(user?.imageUrl);
 
   useEffect(() => {
     const registerUserInDatabase = async (userData: UserData) => {
@@ -43,16 +51,18 @@ const Profile: React.FC = () => {
       if (isNewUser) {
         // Extract user information and handle null values
         const userData: UserData = {
+          _id: user.id,
           firstName: user.firstName || "",
           lastName: user.lastName || "",
           emailAddress: user?.emailAddresses?.[0]?.emailAddress || "",
-          imageUrl: user.imageUrl || "",
+          userImage: user.imageUrl || "",
         };
 
         registerUserInDatabase(userData);
       }
+      fetchPosts(); // Fetch the latest posts
     }
-  }, [isSignedIn, user]);
+  }, [isSignedIn, user, fetchPosts]);
 
   return (
     <Grid

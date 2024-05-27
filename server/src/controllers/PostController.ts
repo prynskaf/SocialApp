@@ -63,11 +63,11 @@ export const getPostById = async (req: Request, res: Response) => {
 
 // Create a new post
 export const createPost = async (req: Request, res: Response) => {
-  const { email, content } = req.body;
+  const { userId, content } = req.body; // Use userId instead of email
   const imageFile = req.file as unknown as UploadedFile;
 
   try {
-    const user = await User.findOne({ emailAddress: email });
+    const user = await User.findById(userId); // Find user by ID
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -83,7 +83,7 @@ export const createPost = async (req: Request, res: Response) => {
     }
 
     const newPost = await Post.create({
-      user: user._id,
+      user: user._id, // Use the user ID directly
       content,
       imageUrls: imageUrl ? [imageUrl] : [], // Store the S3 URL
     });

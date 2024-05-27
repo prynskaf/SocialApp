@@ -51,26 +51,37 @@ export const getUserById = async (req: Request, res: Response) => {
 
 // Create a new user or retrieve existing user
 export const createUser = async (req: Request, res: Response) => {
-  const { firstName, lastName, userImage, emailAddress } = req.body;
+  const { firstName, lastName, userImage, emailAddress, _id } = req.body;
+
+  // Log the request body
+  // console.log(req.body);
+
   try {
+    // Normalize and validate the email before proceeding
+    const normalizedEmail = emailAddress.trim().toLowerCase();
+
     // Check if the user already exists
-    let existingUser: UserDocument | null = await User.findOne({
-      emailAddress,
-    });
+    let existingUser = await User.findOne({ emailAddress: normalizedEmail });
 
     // If the user already exists, send back the existing user
     if (existingUser) {
-      return res.status(200).json(existingUser);
+      return res
+        .status(200)
+        .json({ message: "User already exists", user: existingUser });
     }
 
-    // If the user does not exist, create a new user
+    // Create a new user
     const newUser = await User.create({
+      _id,
       firstName,
       lastName,
+      emailAddress: normalizedEmail,
       userImage,
-      emailAddress,
     });
-    res.status(201).json(newUser);
+
+    res
+      .status(201)
+      .json({ message: "User created successfully", user: newUser });
   } catch (error: any) {
     res.status(400).json({ message: error.message });
   }
