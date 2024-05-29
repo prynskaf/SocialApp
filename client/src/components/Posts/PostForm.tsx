@@ -1,8 +1,17 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import SendIcon from "@mui/icons-material/Send";
-import { Button, Grid, useMediaQuery, useTheme, Box } from "@mui/material";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import {
+  Button,
+  Grid,
+  useMediaQuery,
+  useTheme,
+  Box,
+  IconButton,
+} from "@mui/material";
 import { toast } from "sonner";
+import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
 interface PostFormProps {
   fetchPosts: () => void;
@@ -14,6 +23,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
   const { user } = useClerk();
   const [fileName, setFileName] = useState("");
   const [postText, setPostText] = useState("");
+  const [emojiPickerVisible, setEmojiPickerVisible] = useState(false);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -26,6 +36,10 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
 
   const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     setPostText(event.target.value);
+  };
+
+  const handleEmojiClick = (emojiData: EmojiClickData) => {
+    setPostText((prevText) => prevText + emojiData.emoji);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -92,6 +106,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
               flexDirection: "column",
               alignItems: "center",
               gap: 2,
+              position: "relative", // Ensure the Box is positioned relatively
             }}
           >
             {user && (
@@ -171,15 +186,20 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 >
                   {fileName || "Upload Image"}
                 </label>
+                <IconButton
+                  onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
+                >
+                  <EmojiEmotionsIcon />
+                </IconButton>
                 <Button
                   type="submit"
                   variant="contained"
+                  disabled={!postText.trim()}
                   sx={{
                     backgroundColor: "#7b20a2",
                     color: "#fff",
                     border: "none",
                     borderRadius: "10px",
-                    // padding: "10px 15px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -192,6 +212,18 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 >
                   <SendIcon />
                 </Button>
+                {emojiPickerVisible && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      bottom: "-150%",
+                      right: 0,
+                      zIndex: 10,
+                    }}
+                  >
+                    <EmojiPicker onEmojiClick={handleEmojiClick} />
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>
