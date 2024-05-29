@@ -162,7 +162,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                   justifyContent: "flex-end",
                   alignItems: "center",
                   mt: 2,
-                  gap: 1,
+                  // gap: 1,
                   color: "white",
                 }}
               >
@@ -189,7 +189,9 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 <IconButton
                   onClick={() => setEmojiPickerVisible(!emojiPickerVisible)}
                 >
-                  <EmojiEmotionsIcon />
+                  <EmojiEmotionsIcon
+                    style={{ display: isMobile ? "none" : "block" }}
+                  />
                 </IconButton>
                 <Button
                   type="submit"
