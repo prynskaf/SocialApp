@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.11.5",
     "@giphy/js-fetch-api": "^5.6.0",
     "@giphy/react-components": "^9.5.0",
-    "@mui/icons-material": "^5.15.15",
+    "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.18",
     "emoji-picker-react": "^4.9.3",
     "lucide-react": "^0.379.0",

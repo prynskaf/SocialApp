@@ -2,6 +2,7 @@ import React, { useState, FormEvent } from "react";
 import { TextField, Button, Box, useTheme, useMediaQuery } from "@mui/material";
 import { User } from "../../types";
 import { toast } from "sonner";
+import { SendIcon } from "lucide-react";
 
 interface CommentFormProps {
   user: User;
@@ -111,7 +112,7 @@ const CommentForm: React.FC<CommentFormProps> = ({
               },
             }}
           >
-            Submit
+            <SendIcon />
           </Button>
         )}
       </form>

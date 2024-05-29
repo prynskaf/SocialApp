@@ -94,6 +94,8 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
+  console.log(posts);
+
   return (
     <Grid
       container
@@ -129,25 +131,33 @@ const PostCard: React.FC<PostCardProps> = ({
                 justifyContent: "space-between",
               }}
             >
-              {post.user.userImage && post.user.userImage.length > 0 && (
-                <img
-                  src={post.user.userImage[0] || ""}
-                  alt="User"
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    marginRight: "10px",
-                  }}
-                />
-              )}
-              <div>
-                <h4>{`${post.user.firstName} ${post.user.lastName}`}</h4>
-                {/* <TimeAgo date={post.timestamp} live={false} /> */}
-                <Typography variant="body2" color="textSecondary">
-                  <TimeAgo date={post.timestamp} live={false} />
-                </Typography>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {post.user.userImage && post.user.userImage.length > 0 && (
+                  <img
+                    src={post.user.userImage[0] || ""}
+                    alt="User"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      marginRight: "10px",
+                    }}
+                  />
+                )}
+                <div>
+                  <h4>{`${post.user.firstName} ${post.user.lastName}`}</h4>
+                  {/* <TimeAgo date={post.timestamp} live={false} /> */}
+                  <Typography variant="body2" color="textSecondary">
+                    <TimeAgo date={post.timestamp} live={false} />
+                  </Typography>
+                </div>
               </div>
+
               {currentUser?._id === post.user._id && (
                 <div>
                   <DeleteIcon

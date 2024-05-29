@@ -4,6 +4,7 @@ import { Post, User, Comment } from "../../types";
 import TimeAgo from "react-timeago";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { toast } from "sonner";
+import StarIcon from "@mui/icons-material/Star";
 
 interface CommentListProps {
   post: Post;
@@ -120,17 +121,57 @@ const CommentList: React.FC<CommentListProps> = ({
                 fontWeight: "bold",
               }}
             >
-              <div>
-                <Typography variant="body1" fontWeight="bold">
-                  {users[comment.user]
-                    ? `${users[comment.user].firstName} ${
-                        users[comment.user].lastName
-                      }`
-                    : "Unknown User"}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  <TimeAgo date={comment.timestamp} live={false} />
-                </Typography>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {/* Use optional chaining to prevent accessing properties of undefined */}
+                {users[comment.user]?.userImage?.[0] && (
+                  <img
+                    src={users[comment.user].userImage?.[0] ?? ""}
+                    alt={`${
+                      users[comment.user]?.firstName ?? "User"
+                    }'s profile`}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      marginRight: "10px",
+                    }}
+                  />
+                )}
+                <div>
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {users[comment.user]
+                      ? `${users[comment.user].firstName} ${
+                          users[comment.user].lastName
+                        }`
+                      : "Unknown User"}
+                    {/* Show the icon next to the user's name if they are also the post author */}
+                    {comment.user === post.user._id && (
+                      <StarIcon
+                        sx={{
+                          fontSize: 20,
+                          color: "gold",
+                          ml: 0.5,
+                          fontWeight: "bold",
+                        }}
+                      />
+                    )}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    <TimeAgo date={comment.timestamp} live={false} />
+                  </Typography>
+                </div>
               </div>
               {currentUser?._id === comment.user && (
                 <DeleteIcon

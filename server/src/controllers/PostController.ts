@@ -22,7 +22,7 @@ interface UploadedFile {
   etag: string;
 }
 
-// Fetch comments by post ID
+// Fetch comments by post ID   //didnt useyet
 export const getCommentsByPostId = async (req: Request, res: Response) => {
   const postId = req.params.id;
   try {
@@ -37,7 +37,7 @@ export const getCommentsByPostId = async (req: Request, res: Response) => {
 export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find()
-      .populate("user", "firstName lastName imageUrls")
+      .populate("user", "firstName lastName imageUrls userImage")
       .exec();
     res.status(200).json(posts);
   } catch (error: any) {
@@ -50,7 +50,7 @@ export const getPostById = async (req: Request, res: Response) => {
   const postId = req.params.id;
   try {
     const post = await Post.findById(postId)
-      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .populate("user", "firstName lastName imageUrls userImage") // Include user imageUrls
       .exec();
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
@@ -104,7 +104,7 @@ export const updatePost = async (req: Request, res: Response) => {
       { content, imageUrls },
       { new: true }
     )
-      .populate("user", "firstName lastName imageUrls") // Include user imageUrls
+      .populate("user", "firstName lastName imageUrls userImage") // Include user imageUrls
       .exec();
     if (!updatedPost) {
       return res.status(404).json({ message: "Post not found" });

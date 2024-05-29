@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
-import SendIcon from "@mui/icons-material/Send";
+// import SendIcon from "@mui/icons-material/Send";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import {
   Button,
@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { toast } from "sonner";
 import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
+import { SendIcon } from "lucide-react";
 
 interface PostFormProps {
   fetchPosts: () => void;
