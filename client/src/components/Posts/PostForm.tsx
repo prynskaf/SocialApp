@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useClerk } from "@clerk/clerk-react";
 import SendIcon from "@mui/icons-material/Send";
-import { Button, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Button, Grid, useMediaQuery, useTheme, Box } from "@mui/material";
 import { toast } from "sonner";
 
 interface PostFormProps {
@@ -82,21 +82,20 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
     >
       <Grid item xs={12} sm={10} md={8} lg={6}>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
-          <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-            gap={2}
+          <Box
             sx={{
               backgroundColor: "#f9f9f9",
               border: "1px solid #ccc",
               borderRadius: "20px",
               padding: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
             }}
           >
             {user && (
-              <Grid
+              <Box
                 sx={{
                   display: "flex",
                   justifyContent: "flex-start",
@@ -114,17 +113,17 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                     marginBottom: isMobile ? "10px" : 0,
                   }}
                 />
-              </Grid>
+              </Box>
             )}
-            <Grid item xs={12}>
+            <Box sx={{ width: "100%" }}>
               <textarea
                 required
                 placeholder="Share a post..."
                 style={{
-                  width: isMobile ? "300px" : "400px",
+                  width: "100%",
                   minHeight: "150px",
                   borderRadius: "10px",
-                  padding: isMobile ? "10px" : "20px",
+                  padding: "10px",
                   fontSize: "16px", // Ensure the font size is at least 16px
                   outline: "none",
                   resize: "none",
@@ -142,60 +141,60 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 onChange={handleFileChange}
                 style={{ display: "none" }}
               />
-              <Grid
-                container
-                justifyContent="flex-end"
-                alignItems="center"
-                gap="10px"
-                mt="5px"
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  mt: 2,
+                  gap: 1,
+                  color: "white",
+                }}
               >
-                <Grid item>
-                  <label
-                    htmlFor="file"
-                    title={fileName || "Choose a file..."}
-                    style={{
-                      display: "block",
-                      backgroundColor: "#C4C4C4",
-                      borderRadius: "10px",
-                      cursor: "pointer",
-                      padding: "15px 20px",
-                      fontSize: isMobile ? "10px" : "12px",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      maxWidth: isMobile ? "120px" : "150px",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    {fileName || "Upload Image"}
-                  </label>
-                </Grid>
-                <Grid item>
-                  <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                      backgroundColor: "#7b20a2",
-                      color: "#fff",
-                      border: "none",
-                      borderRadius: "10px",
-                      padding: "10px 20px",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "5px",
-                      fontSize: isMobile ? "10px" : "12px",
-                      "&:hover": {
-                        bgcolor: "#7a20a2",
-                      },
-                    }}
-                  >
-                    <SendIcon />
-                  </Button>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
+                <label
+                  htmlFor="file"
+                  title={fileName || "Choose a file..."}
+                  style={{
+                    display: "block",
+                    backgroundColor: "#000",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    padding: "10px 15px",
+                    fontSize: "12px",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: "150px",
+                    boxSizing: "border-box",
+                    color: "white",
+                  }}
+                >
+                  {fileName || "Upload Image"}
+                </label>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#7b20a2",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "10px",
+                    // padding: "10px 15px",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    fontSize: "12px",
+                    "&:hover": {
+                      bgcolor: "#7a20a2",
+                    },
+                  }}
+                >
+                  <SendIcon />
+                </Button>
+              </Box>
+            </Box>
+          </Box>
         </form>
       </Grid>
     </Grid>
