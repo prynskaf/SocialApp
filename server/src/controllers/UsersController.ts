@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import User, { UserDocument } from "../models/User";
+import { sendWelcomeEmail } from "../utils/ mailer";
 
 // Function to find a user by Clerk ID
 const findUserByClerkId = async (
@@ -53,24 +54,17 @@ export const getUserById = async (req: Request, res: Response) => {
 export const createUser = async (req: Request, res: Response) => {
   const { firstName, lastName, userImage, emailAddress, _id } = req.body;
 
-  // Log the request body
-  // console.log(req.body);
-
   try {
-    // Normalize and validate the email before proceeding
     const normalizedEmail = emailAddress.trim().toLowerCase();
 
-    // Check if the user already exists
     let existingUser = await User.findOne({ emailAddress: normalizedEmail });
 
-    // If the user already exists, send back the existing user
     if (existingUser) {
       return res
         .status(200)
         .json({ message: "User already exists", user: existingUser });
     }
 
-    // Create a new user
     const newUser = await User.create({
       _id,
       firstName,
@@ -79,6 +73,9 @@ export const createUser = async (req: Request, res: Response) => {
       userImage,
     });
 
+    // Send a welcome email
+    await sendWelcomeEmail(normalizedEmail, firstName);
+
     res
       .status(201)
       .json({ message: "User created successfully", user: newUser });
@@ -86,7 +83,6 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(400).json({ message: error.message });
   }
 };
-
 // Update a user by ID
 export const updateUser = async (req: Request, res: Response) => {
   const userId = req.params.id;
