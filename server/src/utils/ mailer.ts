@@ -16,8 +16,8 @@ export const sendWelcomeEmail = async (email: string, name: string) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Welcome to SocialApp!",
-    text: `Hello ${name},\n\nThank you for registering at SocialApp!\n\nBest regards,\nSocialApp Team`,
+    subject: "Welcome to SocialConnect!",
+    text: `Hello ${name},\n\nThank you for registering at SocialConnect!\n\nBest regards,\nSocialConnect Team`,
   };
   try {
     await transporter.sendMail(mailOptions);
