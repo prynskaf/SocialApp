@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Profile from "../components/Profile/Profile";
 import Widget from "../components/Widget/Widget";
-import { Grid, useMediaQuery, useTheme } from "@mui/material";
+import {
+  Grid,
+  useMediaQuery,
+  useTheme,
+  CircularProgress,
+  Box,
+} from "@mui/material";
 import PostForm from "../components/Posts/PostForm";
 import PostCard from "../components/PostCard/PostCard";
 import { Post, User } from "../types";
@@ -12,11 +18,11 @@ const Homepage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [posts, setPosts] = useState<Post[]>([]);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const { user } = useUser();
 
-  // console.log(currentUser);
-
   const fetchPosts = useCallback(async () => {
+    setLoading(true); // Start loading
     try {
       const response = await fetch("/api/posts/");
       if (response.ok) {
@@ -45,6 +51,8 @@ const Homepage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setLoading(false); // Stop loading
     }
   }, []);
 
@@ -55,7 +63,7 @@ const Homepage: React.FC = () => {
   useEffect(() => {
     if (user) {
       setCurrentUser({
-        _id: user.id, // Assuming user.id is where the user ID is stored
+        _id: user.id,
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         emailAddress: user.emailAddresses[0]?.emailAddress || "",
@@ -76,7 +84,6 @@ const Homepage: React.FC = () => {
         px: "20px",
         flex: "nowrap",
         whiteSpace: "nowrap",
-        // bgcolor: "#D9D9D4",
       }}
     >
       <Grid
@@ -102,16 +109,31 @@ const Homepage: React.FC = () => {
           width: "100%",
           flexDirection: "column",
           alignItems: "center",
-          // justifyContent: "center",
           gap: "30px",
         }}
       >
         <PostForm fetchPosts={fetchPosts} />
-        <PostCard
-          posts={posts}
-          fetchPosts={fetchPosts}
-          currentUser={currentUser}
-        />
+
+        {/* Loading Section */}
+        {loading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+              width: "100%",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <PostCard
+            posts={posts}
+            fetchPosts={fetchPosts}
+            currentUser={currentUser}
+          />
+        )}
       </Grid>
     </Grid>
   );
