@@ -76,6 +76,7 @@ const Homepage: React.FC = () => {
         px: "20px",
         flex: "nowrap",
         whiteSpace: "nowrap",
+        // bgcolor: "#D9D9D4",
       }}
     >
       <Grid
@@ -87,7 +88,11 @@ const Homepage: React.FC = () => {
           marginBottom: "110px",
         }}
       >
-        <Profile fetchPosts={fetchPosts} />
+        <Profile
+          fetchPosts={fetchPosts}
+          posts={posts}
+          currentUser={currentUser}
+        />
         <Widget />
       </Grid>
       <Grid
@@ -97,7 +102,7 @@ const Homepage: React.FC = () => {
           width: "100%",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
+          // justifyContent: "center",
           gap: "30px",
         }}
       >

@@ -93,7 +93,7 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
       container
       justifyContent="center"
       alignItems="center"
-      sx={{ textAlign: "center", padding: isMobile ? "20px 0" : "0 20px" }} // Center the form vertically
+      sx={{ textAlign: "center", padding: isMobile ? "20px 0" : "0 20px" }}
     >
       <Grid item xs={12} sm={10} md={8} lg={6}>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
@@ -107,7 +107,6 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
               flexDirection: "column",
               alignItems: "center",
               gap: 2,
-              position: "relative", // Ensure the Box is positioned relatively
             }}
           >
             {user && (
@@ -137,12 +136,13 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                 placeholder="Share a post..."
                 style={{
                   width: "100%",
-                  minHeight: "150px",
+                  // minHeight: "150px",
+                  height: "auto",
                   borderRadius: "10px",
                   padding: "10px",
                   fontSize: "16px", // Ensure the font size is at least 16px
                   outline: "none",
-                  resize: "none",
+                  resize: "vertical",
                   overflow: "auto",
                 }}
                 value={postText}
@@ -219,8 +219,9 @@ const PostForm: React.FC<PostFormProps> = ({ fetchPosts }) => {
                   <Box
                     sx={{
                       position: "absolute",
-                      bottom: "-150%",
-                      right: 0,
+                      bottom: "-20%",
+                      right: 350,
+
                       zIndex: 10,
                     }}
                   >

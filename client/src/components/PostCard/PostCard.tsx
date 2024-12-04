@@ -94,7 +94,7 @@ const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
-  console.log(posts);
+  console.log("pots", posts);
 
   return (
     <Grid
