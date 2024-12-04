@@ -104,6 +104,7 @@ const PostCard: React.FC<PostCardProps> = ({
         justifyContent: "center",
         padding: isMobile ? "0 20px" : "0 20px",
         gap: "30px",
+        flex: "wrap",
       }}
     >
       {posts.map((post) => (
@@ -121,6 +122,8 @@ const PostCard: React.FC<PostCardProps> = ({
               padding: "20px",
               borderRadius: "8px",
               backgroundColor: "#fff",
+              whiteSpace: "pre-wrap",
+              overflowWrap: "break-word",
             }}
           >
             <div
@@ -173,7 +176,14 @@ const PostCard: React.FC<PostCardProps> = ({
                 </div>
               )}
             </div>
-            <p style={{ whiteSpace: "pre-wrap" }}>{post.content}</p>
+            <p
+              style={{
+                whiteSpace: "pre-wrap",
+                marginBottom: "10px",
+              }}
+            >
+              {post.content}
+            </p>
             {post.imageUrls.map((imageUrl, index) => (
               <img
                 key={index}
