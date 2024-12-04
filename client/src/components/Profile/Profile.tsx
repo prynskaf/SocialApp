@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/clerk-react";
 import { Box, Grid, Typography, useMediaQuery, useTheme } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
+import { Post, User } from "../../types";
 
 // Define UserData interface with nullable properties
 interface UserData {
@@ -13,15 +14,34 @@ interface UserData {
 
 interface ProfileProps {
   fetchPosts: () => void;
+  posts: Post[];
+  currentUser: User | null;
 }
 
 // user_2fowuBhvgizKKgpgDGNL8w4GxkQ
 
-const Profile: React.FC<ProfileProps> = ({ fetchPosts }) => {
+const Profile: React.FC<ProfileProps> = ({
+  fetchPosts,
+  posts,
+  currentUser,
+}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
   const { isSignedIn, user } = useUser();
-  // console.log(user?.imageUrl);
+
+  // calcuter the current usrs posts oount
+  const userPostCount = useMemo(() => {
+    if (!currentUser || !posts) return 0;
+    return posts.filter((post) => post.user._id === currentUser._id).length;
+  }, [posts, currentUser]);
+
+  // calculate the total number of likes the user has received
+  const userLikeCount = useMemo(() => {
+    if (!currentUser || !posts) return 0;
+    return posts
+      .filter((post) => post.user._id === currentUser._id)
+      .reduce((totalLikes, post) => totalLikes + (post.likes?.length || 0), 0);
+  }, [posts, currentUser]);
 
   useEffect(() => {
     const registerUserInDatabase = async (userData: UserData) => {
@@ -64,35 +84,68 @@ const Profile: React.FC<ProfileProps> = ({ fetchPosts }) => {
     }
   }, [isSignedIn, user, fetchPosts]);
 
+  if (!isSignedIn && !user) return null;
+
   return (
     <Grid
       item
       sx={{
         width: "200px",
         height: "200px",
-        backgroundColor: "#D9D9D9",
+        // bgcolor: "lightgrey",
+        backgroundColor: "#f9f9f9",
+        border: "1px solid #ccc",
         display: isSmallScreen ? "none" : "flex",
         gap: "10px",
+        flexDirection: "column",
         padding: "10px",
-        borderRadius: "10px",
+        borderRadius: "20px",
+        transition: "transform 0.3s ease-in-out", // Smooth scaling
+        "&:hover": {
+          transform: "scale(1.02)", // Slightly scale up on hover
+        },
       }}
     >
       {user && isSignedIn ? (
         <>
-          <Box>
-            <img
-              src={user?.imageUrl || ""}
-              alt="Profile"
-              style={{ width: "100%", height: "30px", borderRadius: "50%" }}
-            />
-          </Box>
-          <Box>
-            <h3>
-              {user.firstName || ""} {user.lastName || ""}{" "}
-            </h3>
-            <p>Posts</p>
-            <p>Likes</p>
-          </Box>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Box>
+              <img
+                src={user?.imageUrl || ""}
+                alt="Profile"
+                style={{ width: "100%", height: "30px", borderRadius: "50%" }}
+              />
+            </Box>
+            <Box>
+              <span>
+                <h3>
+                  {user.firstName || ""} {user.lastName || ""}{" "}
+                </h3>
+                <p style={{ fontStyle: "italic" }}>@username</p>
+              </span>
+            </Box>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                // justifyContent: "space-between",
+                // alignItems: "center",
+                gap: "10px",
+                fontStyle: "italic",
+              }}
+            >
+              <p>Posts: {userPostCount}</p>
+              <p>Likes: {userLikeCount}</p>
+            </Box>
+          </div>
         </>
       ) : (
         <Box
